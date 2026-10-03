@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pertanyaan_psikolog', function (Blueprint $table) {
-           $table->id('id_pertanyaan');
-           $table->unsignedBigInteger('id_tes');
+        Schema::create('pertanyaan_psikologis', function (Blueprint $table) {
+           $table->id();
+           $table->foreignId('id_tes')->constrained('tes_psikologis')->onDelete('cascade');
            $table->text('pertanyaan');
+           $table->enum('jawaban', ['Sangat Setuuju', 'Setuju', 'Netral', 'Kurang Setuju', 'Tidak Setuju']);
+           $table->integer('bobot_nilai');
            $table->timestamps();
-
-           $table->foreign('id_tes')->references('id_tes')->on('tes_psikolog')->onDelete('cascade');
         });
     }
 
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pertanyaan_psikolog');
+        Schema::dropIfExists('pertanyaan_psikologis');
     }
 };

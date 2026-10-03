@@ -12,17 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('konsultasi', function (Blueprint $table) {
-           $table->id('id_konsultasi');
-           $table->unsignedBigInteger('id_users');
-           $table->unsignedBigInteger('id_psikolog');
-           $table->unsignedBigInteger('id_jadwal');
-           $table->string('metode'); // e.g., chat / video call
-           $table->string('status_konsultasi');
+           $table->id();
+           $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
+           $table->foreignId('id_psikolog')->constrained('psikolog')->onDelete('cascade');
+           $table->foreignId('id_jadwal')->constrained('jadwal_psikolog')->onDelete('cascade');
+           $table->enum('metode', ['Online', 'Offline']); 
+           $table->enum('status_konsultasi', ['Menuggu Pembayaran', 'Dikonfirmasi', 'Selesai', 'Batal'])->default('Menuggu Pembayaran');
+           $table->decimal('total_biaya', 10, 2);
            $table->timestamps();
-
-           $table->foreign('id_users')->references('id_user')->on('users')->onDelete('cascade');
-           $table->foreign('id_psikolog')->references('id_psikolog')->on('psikolog')->onDelete('cascade');
-           $table->foreign('id_jadwal')->references('id_jadwal')->on('jadwal_psikolog')->onDelete('cascade');
         });
     }
 

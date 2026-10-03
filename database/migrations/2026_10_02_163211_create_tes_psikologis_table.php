@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tes_psikolog', function (Blueprint $table) {
-            $table->id('id_tes');
+        Schema::create('tes_psikologis', function (Blueprint $table) {
+            $table->id();
             $table->string('nama_tes');
             $table->text('deskripsi')->nullable();
             $table->timestamps();
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tes_psikolog');
+        Schema::dropIfExists('tes_psikologis');
     }
 };

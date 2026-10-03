@@ -12,15 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('artikel', function (Blueprint $table) {
-            $table->id('id_artikel');
-            $table->unsignedBigInteger('id_admin');
+            $table->id();
+            $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
+            $table->foreign('id_kategori')->constrained('kategori')->onDelete('cascadee');
             $table->string('judul');
-            $table->string('jenis_artikel');
             $table->text('isi');
-            $table->timestamp('tanggal_publikasi')->nullable();
+            $table->date('tanggal_publikasi');
             $table->timestamps();
-
-            $table->foreign('id_admin')->references('id_admin')->on('admin_sistem')->onDelete('cascade');
         });
     }
 

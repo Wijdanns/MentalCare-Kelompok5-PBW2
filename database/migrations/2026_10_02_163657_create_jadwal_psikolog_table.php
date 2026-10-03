@@ -12,15 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('jadwal_psikolog', function (Blueprint $table) {
-            $table->id('id_jadwal');
-            $table->unsignedBigInteger('id_psikolog');
+            $table->id();
+            $table->foreignId('id_psikolog')->constrained('psikolog')->onDelete('cascade');
             $table->date('tanggal');
             $table->time('jam_mulai');
             $table->time('jam_selesai');
-            $table->boolean('status_tersedia')->default(true);
+            $table->enum('status', ['Tersedia', 'Tidak Tersedia'])->default('Tersedia');
             $table->timestamps();
-
-            $table->foreign('id_psikolog')->references('id_psikolog')->on('psikolog')->onDelete('cascade');
         });
     }
 

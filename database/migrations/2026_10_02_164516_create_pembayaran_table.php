@@ -12,14 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pembayaran', function (Blueprint $table) {
-            $table->id('id_pembayaran');
-            $table->unsignedBigInteger('id_konsultasi');
-            $table->string('metode');
-            $table->string('status');
-            $table->decimal('jumlah', 10, 2);
+            $table->id();
+            $table->foreignId('id_konsultasi')->constrained('konsultaso')->onDelete('cascade');
+            $table->string('metode_pembayaran')->nullable();
+            $table->timestamp('waktu_pembayaran')->nullable();
+            $table->enum('status_pembayaran', ['Pending', 'Berhasil', 'Gagal'])->default('Pending');
             $table->timestamps();
-
-             $table->foreign('id_konsultasi')->references('id_konsultasi')->on('konsultasi')->onDelete('cascade');
         });
     }
 
