@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('artikel', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
-            $table->foreign('id_kategori')->constrained('kategori')->onDelete('cascadee');
+            $table->foreignId('id_kategori')->constrained('kategori_artikel')->onDelete('cascade');
             $table->string('judul');
             $table->text('isi');
             $table->date('tanggal_publikasi');
