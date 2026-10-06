@@ -10,12 +10,39 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+    
+    protected $table = 'users';
+
+    protected $fillable = [
+    'nama',
+    'email',
+    'password',
+    'role',
+    'profil',
+    ];
+
+    protected $hidden = [
+        'password',
+    ];
+
+    public function hasilTes()
+    {
+        return $this->hasMany(HasilTes::class, 'id_user');
+    }
+    
+    public function konsultasi()
+    {
+        return $this->hasMany(Konsultasi::class, 'id_user');
+    }
+    
+    public function artikel()
+    {
+        return $this->hasMany(Artikel::class, 'id_user');
+    }
 
     /**
      * Get the attributes that should be cast.
