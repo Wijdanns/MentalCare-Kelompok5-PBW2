@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('judul');
             $table->text('isi');
             $table->date('tanggal_publikasi');
+            $table->string('thumbnail')->nullable();
             $table->timestamps();
         });
     }
