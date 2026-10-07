@@ -26,7 +26,7 @@ class YesPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('yes')
-            ->path('yes')
+            ->path('admin')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
