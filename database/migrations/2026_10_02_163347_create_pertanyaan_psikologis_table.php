@@ -15,7 +15,7 @@ return new class extends Migration
            $table->id();
            $table->foreignId('id_tes')->constrained('tes_psikologis')->onDelete('cascade');
            $table->text('pertanyaan');
-           $table->enum('jawaban', ['Sangat Setuuju', 'Setuju', 'Netral', 'Kurang Setuju', 'Tidak Setuju']);
+           $table->enum('jawaban', ['Sangat Setuju', 'Setuju', 'Netral', 'Kurang Setuju', 'Tidak Setuju']);
            $table->integer('bobot_nilai');
            $table->timestamps();
         });

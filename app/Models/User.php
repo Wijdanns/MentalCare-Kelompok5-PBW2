@@ -31,6 +31,11 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function getNameAttribute()
+    {
+        return $this->nama;
+    }
+
     public function canAccessPanel(Panel $panel):bool 
     {
         return $this->role === 'admin';
