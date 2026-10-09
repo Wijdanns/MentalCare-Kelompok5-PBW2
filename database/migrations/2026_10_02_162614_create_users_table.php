@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('role', ['pasien', 'admin'])->default('pasien');
             $table->string('profil')->nullable();
+            $table->rememberToken();
             $table->timestamps(); 
         });
 

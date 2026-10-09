@@ -23,4 +23,9 @@ class HasilTes extends Model
     {
         return $this->belongsTo(TesPsikologis::class, 'id_tes');
     }
+
+    public function jawabanUser()
+    {
+        return $this->hasMany(JawabanUser::class, 'id_hasil');
+    }
 }

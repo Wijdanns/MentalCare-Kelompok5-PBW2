@@ -11,12 +11,15 @@ class PertanyaanPsikologis extends Model
     protected $fillable = [
         'id_tes',
         'pertanyaan',
-        'jawaban',
-        'bobot_nilai',
     ];
 
     public function tesPsikologis()
     {
         return $this->belongsTo(TesPsikologis::class, 'id_tes');
+    }
+
+    public function jawabanPsikologis()
+    {
+        return $this->hasMany(JawabanPsikologis::class, 'id_pertanyaan');
     }
 }
