@@ -80,7 +80,7 @@ class KonsultasisTable
                     ->relationship('psikolog', 'nama'),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('Ubah Status'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
