@@ -23,7 +23,8 @@ class AuthController extends Controller
 
         $validated['role'] = 'pasien';
 
-        User::create($validated);
+        User::create($validated)
+        ;
 
         return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan login.');
     }
