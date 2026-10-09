@@ -11,12 +11,12 @@
         {{-- Menu desktop --}}
         <nav class="hidden items-center gap-9 text-sm font-medium lg:flex">
             <a href="{{ url('/') }}" class="{{ request()->is('/') ? $on : $off }}">Beranda</a>
-            <a href="#" class="{{ request()->is('konsultasi*') ? $on : $off }}">Konsultasi</a>
-            <a href="#" class="{{ request()->is('psikolog*') ? $on : $off }}">Psikolog</a>
+            <a href="{{ url('/konsultasi') }}" class="{{ request()->is('konsultasi*') ? $on : $off }}">Konsultasi</a>
+            <a href="{{ url('/psikolog') }}" class="{{ request()->is('psikolog*') ? $on : $off }}">Psikolog</a>
 
             {{-- Artikel + dropdown (muncul saat hover / fokus keyboard) --}}
             <div class="group relative">
-                <a href="#" class="flex items-center gap-1 {{ request()->is('artikel*') ? $on : $off }}">
+                <a href="{{ url('/artikel') }}" class="flex items-center gap-1 {{ request()->is('artikel*') ? $on : $off }}">
                     Artikel
                     <svg class="h-3.5 w-3.5 transition group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                 </a>
@@ -35,8 +35,8 @@
         {{-- Tombol auth desktop --}}
         <div class="hidden items-center gap-6 text-sm font-semibold lg:flex">
             @guest
-                <a href="#" class="text-primary hover:text-primary-dark">Masuk</a>
-                <a href="#" class="rounded-xl bg-primary px-5 py-3 text-white transition hover:bg-primary-dark">Daftar</a>
+                <a href="/login" class="text-primary hover:text-primary-dark">Masuk</a>
+                <a href="/register" class="rounded-xl bg-primary px-5 py-3 text-white transition hover:bg-primary-dark">Daftar</a>
             @endguest
             @auth
 
@@ -56,8 +56,8 @@
     <div id="mobile-menu" class="hidden border-t border-blush-200 bg-white lg:hidden">
         <nav class="mx-auto flex max-w-[1168px] flex-col gap-1 px-5 py-4 sm:px-8 text-sm font-medium">
             <a href="{{ url('/') }}" class="rounded-lg px-3 py-2.5 {{ request()->is('/') ? 'bg-blush-100 text-primary' : 'text-gray-700' }}">Beranda</a>
-            <a href="#" class="rounded-lg px-3 py-2.5 text-gray-700">Konsultasi</a>
-            <a href="#" class="rounded-lg px-3 py-2.5 text-gray-700">Psikolog</a>
+            <a href="{{ url('/konsultasi') }}" class="rounded-lg px-3 py-2.5 text-gray-700">Konsultasi</a>
+            <a href="{{ url('/psikolog') }}" class="rounded-lg px-3 py-2.5 text-gray-700">Psikolog</a>
 
             <details class="group">
                 <summary class="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2.5 text-gray-700 [&::-webkit-details-marker]:hidden">
@@ -70,11 +70,11 @@
                     <a href="#" class="rounded-lg px-3 py-2 text-gray-600">Jenis artikel</a>
                 </div>
             </details>
-            <a href="#" class="rounded-lg px-3 py-2.5 text-gray-700">Tes Psikologi</a>
+            <a href="{{ url('/tes-psikologi') }}" class="rounded-lg px-3 py-2.5 text-gray-700">Tes Psikologi</a>
             <div class="mt-3 flex gap-3 border-t border-blush-200 pt-4">
                 @guest
-                    <a href="#" class="flex-1 rounded-xl border border-primary px-4 py-2.5 text-center font-semibold text-primary">Masuk</a>
-                    <a href="#" class="flex-1 rounded-xl bg-primary px-4 py-2.5 text-center font-semibold text-white">Daftar</a>
+                    <a href="{{ url('/login') }}" class="flex-1 rounded-xl border border-primary px-4 py-2.5 text-center font-semibold text-primary">Masuk</a>
+                    <a href="{{ url('/register') }}" class="flex-1 rounded-xl bg-primary px-4 py-2.5 text-center font-semibold text-white">Daftar</a>
                 @endguest
                 @auth
                     <a href="#" class="flex-1 rounded-xl bg-primary px-4 py-2.5 text-center font-semibold text-white">Akun saya</a>
