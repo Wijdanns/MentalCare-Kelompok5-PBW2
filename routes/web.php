@@ -17,7 +17,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-// Route setelah Login
+// Route setelah Login (Auth & Fitur Tambahan)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+// Route tambahan dari development (temanmu)
+Route::get('/konsultasi', function () {
+    return view('konsultasi');
 });
