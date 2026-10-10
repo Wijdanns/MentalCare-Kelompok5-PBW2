@@ -8,11 +8,16 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    
-    public function showRegister() { return view('auth.register'); }
-    public function showLogin() { return view('auth.login'); }
+    public function showRegister() 
+    { 
+        return view('register'); 
+    }
 
-  
+    public function showLogin() 
+    { 
+        return view('login'); 
+    }
+
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -23,13 +28,11 @@ class AuthController extends Controller
 
         $validated['role'] = 'pasien';
 
-        User::create($validated)
-        ;
+        User::create($validated);
 
         return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan login.');
     }
 
-    
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -45,7 +48,6 @@ class AuthController extends Controller
         return back()->withErrors(['email' => 'Email atau password salah.'])->onlyInput('email');
     }
 
-    
     public function logout(Request $request)
     {
         Auth::logout();
