@@ -17,7 +17,7 @@ return new class extends Migration
            $table->foreignId('id_psikolog')->constrained('psikolog')->onDelete('cascade');
            $table->foreignId('id_jadwal')->constrained('jadwal_psikolog')->onDelete('cascade');
            $table->enum('metode', ['Online', 'Offline']); 
-           $table->enum('status_konsultasi', ['Menuggu Pembayaran', 'Dikonfirmasi', 'Selesai', 'Batal'])->default('Menuggu Pembayaran');
+           $table->enum('status_konsultasi', ['Menunggu Pembayaran', 'Dikonfirmasi', 'Selesai', 'Batal'])->default('Menunggu Pembayaran');
            $table->decimal('total_biaya', 10, 2);
            $table->timestamps();
         });

@@ -50,6 +50,9 @@
       Belum punya akun? <a href="{{ route('register') }}" class="text-rose-600 font-semibold hover:underline">Daftar</a>
     </p>
 
+    <p class="text-center text-xs text-gray-400 mt-3">
+      <a href="{{ route('home') }}" class="hover:text-rose-600">&larr; Kembali ke beranda</a>
+    </p>
   </div>
 
 </div>

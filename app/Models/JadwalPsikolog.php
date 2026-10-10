@@ -16,6 +16,8 @@ class JadwalPsikolog extends Model
         'status',
     ];
 
+    protected $casts = ['tanggal' => 'date'];
+
     public function psikolog()
     {
         return $this->belongsTo(Psikolog::class, 'id_psikolog');
