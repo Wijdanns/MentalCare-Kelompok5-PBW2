@@ -28,7 +28,6 @@ class YesPanelProvider extends PanelProvider
             ->default()
             ->id('yes')
             ->path('admin')
-            ->login()
             ->brandName('MentalCare')
             ->colors([
                 'primary' =>' #E0004D',
