@@ -2,24 +2,21 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Middleware\EnsureRole;
 
-// Halaman Utama / Home
-Route::get('/', function () {
-    return view('home');
-});
+Route::view('/', 'home')->name('home');
 
-// Route untuk Tamu (Belum Login)
-Route::middleware('guest')->group(function () {
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-});
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
 
-// Route setelah Login (Auth & Fitur Tambahan)
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Area pasien
+Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
+    Route::view('/dashboard', 'pasien.dashboard')->name('pasien.dashboard');
 });
 
 // Route tambahan dari development (temanmu)
