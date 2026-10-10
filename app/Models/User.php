@@ -2,10 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,19 +13,20 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-    
+
     protected $table = 'users';
 
     protected $fillable = [
-    'nama',
-    'email',
-    'password',
-    'role',
-    'profil',
+        'nama',
+        'email',
+        'password',
+        'role',
+        'profil',
     ];
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
     public function getNameAttribute()
@@ -45,12 +43,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(HasilTes::class, 'id_user');
     }
-    
+
     public function konsultasi()
     {
         return $this->hasMany(Konsultasi::class, 'id_user');
     }
-    
+
     public function artikel()
     {
         return $this->hasMany(Artikel::class, 'id_user');

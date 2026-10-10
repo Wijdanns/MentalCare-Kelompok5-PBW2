@@ -88,7 +88,7 @@
 
         <div class="mt-10 grid gap-5 sm:mt-14 md:grid-cols-3">
             <x-card-layanan judul="Konsultasi Online"
-                            deskripsi="Bercerita melalui chat atau video call dengan psikolog pilihanmu." href="#">
+                            deskripsi="Bercerita melalui tatap muka atau video call dengan psikolog pilihanmu." href="#">
                 <x-slot name="icon">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/><path d="M8 8h8M8 12h5"/></svg>
                 </x-slot>
