@@ -1,6 +1,9 @@
 @php
     $on  = 'text-primary';
     $off = 'text-gray-700 hover:text-primary';
+
+    // Belum ada = dropdown hanya berisi "Semua".
+    $kategoriArtikel = $kategoriArtikel ?? collect();
 @endphp
 
 <header class="sticky top-0 z-50 border-b border-blush-200/70 bg-white/95 backdrop-blur">
@@ -21,10 +24,11 @@
                     <svg class="h-3.5 w-3.5 transition group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                 </a>
                 <div class="invisible absolute left-0 top-full pt-4 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-                    <div class="w-48 rounded-xl border border-blush-200 bg-white p-2 shadow-lg">
-                        {{-- TODO: sesuaikan dengan jenis artikel dari BE --}}
-                        <a href="#" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Semua artikel</a>
-                        <a href="#" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Jenis artikel</a>
+                    <div class="max-h-80 w-56 overflow-y-auto rounded-xl border border-blush-200 bg-white p-2 shadow-lg">
+                        <a href="{{ url('/artikel') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Semua</a>
+                        @foreach ($kategoriArtikel as $kategori)
+                            <a href="{{ url('/artikel') }}?kategori={{ $kategori->getKey() }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">{{ $kategori->nama_kategori }}</a>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -108,9 +112,10 @@
                     <svg class="h-4 w-4 transition group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                 </summary>
                 <div class="ml-3 flex flex-col border-l border-blush-200 pl-3">
-
-                    <a href="#" class="rounded-lg px-3 py-2 text-gray-600">Semua artikel</a>
-                    <a href="#" class="rounded-lg px-3 py-2 text-gray-600">Jenis artikel</a>
+                    <a href="{{ url('/artikel') }}" class="rounded-lg px-3 py-2 text-gray-600">Semua</a>
+                    @foreach ($kategoriArtikel as $kategori)
+                        <a href="{{ url('/artikel') }}?kategori={{ $kategori->getKey() }}" class="rounded-lg px-3 py-2 text-gray-600">{{ $kategori->nama_kategori }}</a>
+                    @endforeach
                 </div>
             </details>
             <a href="{{ url('/tes-psikologi') }}" class="rounded-lg px-3 py-2.5 text-gray-700">Tes Psikologi</a>
