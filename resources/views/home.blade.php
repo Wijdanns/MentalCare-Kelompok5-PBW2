@@ -2,7 +2,7 @@
 
 @section('title', 'Beranda | MentalCare')
 
-@php.
+@php
     $psikologs = $psikologs ?? collect();
 @endphp
 
