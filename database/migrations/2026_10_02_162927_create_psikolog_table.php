@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama');
             $table->string('email')->unique();
             $table->string('spesialis');
+            $table->string('kategori');
             $table->text('deskripsi_psikolog')->nullable();
             $table->string('foto_profil')->nullable();
             $table->decimal('biaya', 10, 2);
