@@ -7,7 +7,7 @@
         </p>
 
         <nav class="flex items-center gap-6 text-sm text-gray-600">
-            <a href="#" class="hover:text-primary">Artikel</a>
+            <a href="{{ url('/artikel') }}" class="hover:text-primary">Artikel</a>
             <a href="#" class="hover:text-primary">Privasi</a>
             <a href="#" class="hover:text-primary">Bantuan</a>
         </nav>
