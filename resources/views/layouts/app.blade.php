@@ -7,11 +7,16 @@
     <title>@yield('title', 'MentalCare')</title>
 
     {{-- Font: Plus Jakarta Sans --}}
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    {{--
+        Tailwind lewat CDN supaya langsung jalan di Laragon tanpa npm.
+        Kalau tim pindah ke Vite, hapus 2 tag <script> di bawah, lalu pakai:
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        dan pindahkan warna/font di bawah ke konfigurasi Tailwind.
+    --}}
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -30,6 +35,10 @@
         }
     </script>
 
+    {{-- Alpine.js: dipakai untuk pop-up profil psikolog, filter, dan form konsultasi --}}
+    <style>[x-cloak] { display: none !important; }</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+
     @stack('styles')
 </head>
 <body class="flex min-h-screen flex-col bg-blush-50 font-sans text-ink antialiased">
@@ -39,8 +48,6 @@
     <main class="flex-1">
         @yield('content')
     </main>
-
-    @include('partials.toggle-wa')
 
     @include('partials.footer')
 

@@ -29,7 +29,7 @@
                 </div>
             </div>
 
-            <a href="#" class="{{ request()->is('tes*') ? $on : $off }}">Tes Psikologi</a>
+            <a href="{{ url('/tes-psikologi') }}" class="{{ request()->is('tes*') ? $on : $off }}">Tes Psikologi</a>
         </nav>
 
         {{-- Tombol auth desktop --}}

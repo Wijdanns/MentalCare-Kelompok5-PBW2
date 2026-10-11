@@ -2,41 +2,8 @@
 
 @section('title', 'Beranda | MentalCare')
 
-@php
-    /*
-    |--------------------------------------------------------------------------
-    | DATA DUMMY - HAPUS BLOK INI SAAT BACKEND SIAP
-    |--------------------------------------------------------------------------
-    | Kalau controller mengirim $psikologs, data asli otomatis dipakai dan blok
-    | ini diabaikan. Setelah itu, hapus blok ini dan folder public/images/dummy.
-    | Nama field harus sama dengan yang disepakati dengan BE.
-    */
-    $psikologs = $psikologs ?? collect([
-        (object) [
-            'nama' => 'Dr. Aulia Rahman, M.Psi.',
-            'spesialisasi' => 'Kecemasan & Pengembangan Diri',
-            'pengalaman_tahun' => 7,
-            'tarif' => 150000,
-            'tersedia' => true,
-            'foto' => asset('images/dummy/psikolog-1.svg'),
-        ],
-        (object) [
-            'nama' => 'Dimas Pratama, M.Psi.',
-            'spesialisasi' => 'Relasi & Masalah Keluarga',
-            'pengalaman_tahun' => 9,
-            'tarif' => 175000,
-            'tersedia' => true,
-            'foto' => asset('images/dummy/psikolog-2.svg'),
-        ],
-        (object) [
-            'nama' => 'Nadia Putri, M.Psi.',
-            'spesialisasi' => 'Stres Kerja & Burnout',
-            'pengalaman_tahun' => 6,
-            'tarif' => 145000,
-            'tersedia' => false,
-            'foto' => asset('images/dummy/psikolog-3.svg'),
-        ],
-    ]);
+@php.
+    $psikologs = $psikologs ?? collect();
 @endphp
 
 @section('content')
@@ -58,22 +25,24 @@
         </p>
 
         <div class="mt-8 flex flex-wrap gap-3">
-            {{-- TODO: route ke halaman konsultasi --}}
-            <a href="#" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 font-semibold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-dark sm:w-auto">
+            <a href="{{ url('/konsultasi') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 font-semibold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-dark sm:w-auto">
                 Mulai konsultasi
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
             </a>
-            {{-- TODO: route ke daftar psikolog --}}
-            <a href="#" class="w-full rounded-xl border border-gray-200 bg-white px-6 py-3.5 text-center font-semibold text-ink transition hover:border-primary hover:text-primary sm:w-auto">
+            <a href="{{ url('/psikolog') }}" class="w-full rounded-xl border border-gray-200 bg-white px-6 py-3.5 text-center font-semibold text-ink transition hover:border-primary hover:text-primary sm:w-auto">
                 Lihat psikolog
             </a>
         </div>
     </div>
 
     <div class="rounded-[32px] bg-blush-200/80 p-3 shadow-2xl shadow-primary/10">
-        {{-- Ganti dengan foto asli, misal public/images/hero.jpg --}}
-        <img src="{{ asset('images/dummy/hero.svg') }}" alt="Seseorang duduk tenang menghadap pemandangan"
+        {{-- Placeholder tanpa gambar. Kalau nanti ada foto
+        <img src="{{ asset('images/hero.jpg') }}" alt="Seseorang duduk tenang menghadap pemandangan"
              class="aspect-[473/496] w-full rounded-[22px] object-cover">
+        --}}
+        <div class="flex aspect-[473/496] w-full items-center justify-center rounded-[22px] bg-gradient-to-br from-blush-100 via-blush-200 to-primary/20">
+            <svg class="h-24 w-24 text-primary/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+        </div>
     </div>
 </section>
 
@@ -88,14 +57,14 @@
 
         <div class="mt-10 grid gap-5 sm:mt-14 md:grid-cols-3">
             <x-card-layanan judul="Konsultasi Online"
-                            deskripsi="Bercerita melalui tatap muka atau video call dengan psikolog pilihanmu." href="#">
+                            deskripsi="Bercerita melalui chat atau video call dengan psikolog pilihanmu." :href="url('/konsultasi')">
                 <x-slot name="icon">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/><path d="M8 8h8M8 12h5"/></svg>
                 </x-slot>
             </x-card-layanan>
 
             <x-card-layanan judul="Daftar Psikolog"
-                            deskripsi="Temukan psikolog profesional yang sesuai dengan kebutuhanmu." href="#">
+                            deskripsi="Temukan psikolog profesional yang sesuai dengan kebutuhanmu." :href="url('/psikolog')">
                 <x-slot name="icon">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
                 </x-slot>
@@ -118,15 +87,14 @@
             <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">Psikolog pilihan</p>
             <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">Bertemu dengan ahlinya</h2>
         </div>
-        {{-- TODO: route ke daftar psikolog --}}
-        <a href="#" class="inline-flex shrink-0 items-center gap-2 font-semibold text-primary hover:text-primary-dark">
+        <a href="{{ url('/psikolog') }}" class="inline-flex shrink-0 items-center gap-2 font-semibold text-primary hover:text-primary-dark">
             Lihat semua
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
         </a>
     </div>
 
     <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        @forelse ($psikologs as $psikolog)
+        @forelse ($psikologs->take(3) as $psikolog)
             <x-card-psikolog :psikolog="$psikolog" />
         @empty
             <p class="col-span-full rounded-2xl border border-dashed border-blush-200 bg-white p-10 text-center text-gray-500">
@@ -135,5 +103,8 @@
         @endforelse
     </div>
 </section>
+
+{{-- Pop-up profil psikolog (dibuka tombol "Lihat profil" di card) --}}
+<x-modal-profil-psikolog />
 
 @endsection
