@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Middleware\EnsureRole;
+use App\Http\Controllers\PsikologController;
 
 Route::view('/', 'home')->name('home');
 
@@ -23,3 +24,5 @@ Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
 Route::get('/konsultasi', function () {
     return view('konsultasi');
 });
+
+Route::get('/psikolog', [PsikologController::class, 'index'])->name('psikolog.index');
