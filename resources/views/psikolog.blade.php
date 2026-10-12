@@ -3,8 +3,7 @@
 @section('title', 'Psikolog | MentalCare')
 
 @php
-    // Data psikolog dikirim dari controller (BE) sebagai $psikologs.
-    // Belum ada data = tampil kosong (tanpa data dummy).
+    // Data psikolog dikirim dari controller (BE) sebagai $psikologs
     $psikologs = $psikologs ?? collect();
 
     // Chip filter. Nilai 'kategori' di data psikolog harus salah satu slug ini (huruf kecil).

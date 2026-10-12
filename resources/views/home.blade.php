@@ -71,7 +71,7 @@
             </x-card-layanan>
 
             <x-card-layanan judul="Tes Psikologi"
-                            deskripsi="Kenali kondisi emosionalmu melalui tes awal yang mudah dipahami." href="#">
+                            deskripsi="Kenali kondisi emosionalmu melalui tes awal yang mudah dipahami." :href="url('/tes-psikologi')">
                 <x-slot name="icon">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M12 5c-2.5 0-4.5 1.6-4.5 3.7 0 .6.1 1 .3 1.5-1.3.5-2.3 1.8-2.3 3.3 0 1.5 1 2.7 2.3 3.2.4 1.3 1.8 2.3 4.2 2.3"/><path d="M12 5c2.5 0 4.5 1.6 4.5 3.7 0 .6-.1 1-.3 1.5 1.3.5 2.3 1.8 2.3 3.3 0 1.5-1 2.7-2.3 3.2-.4 1.3-1.8 2.3-4.2 2.3"/></svg>
                 </x-slot>
