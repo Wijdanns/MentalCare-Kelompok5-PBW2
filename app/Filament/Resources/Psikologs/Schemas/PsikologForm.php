@@ -37,13 +37,13 @@ class PsikologForm
 
                 FileUpload::make('foto_profil')
                     ->label('Foto Profil')
-                ->image()
-                ->avatar()
-                ->disk('public')
-                ->directory('psikolog')
-                ->visibility('public')
-                ->imageEditor()
-                ->columnSpanFull(),
+                    ->image()
+                    ->avatar()
+                    ->disk('public')
+                    ->directory('psikolog')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->columnSpanFull(),
 
                 TextInput::make('biaya')
                     ->label('Biaya per Sesi')
