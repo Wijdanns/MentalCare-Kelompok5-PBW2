@@ -1,11 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Middleware\EnsureRole;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PsikologController;
+use App\Http\Controllers\TesController;
+use App\Http\Middleware\EnsureRole;
+use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'home')->name('home');
+// ---------- Publik ----------
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -15,14 +18,25 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-// Area pasien
-Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
-    Route::view('/dashboard', 'pasien.dashboard')->name('pasien.dashboard');
-});
+Route::get('/psikolog', [PsikologController::class, 'index'])->name('psikolog.index');
+Route::get('/psikolog/{psikolog}', [PsikologController::class, 'show'])->name('psikolog.show');
 
-// Route tambahan dari development (temanmu)
+Route::get('/tes-psikologi', [TesController::class, 'index'])->name('tes.index');
+
+// Route tambahan dari development (temanmu), sementara sampai controller konsultasi dibuat
 Route::get('/konsultasi', function () {
     return view('konsultasi');
-});
+})->name('konsultasi.index');
 
-Route::get('/psikolog', [PsikologController::class, 'index'])->name('psikolog.index');
+// ---------- Area pasien (wajib login) ----------
+Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
+    Route::view('/dashboard', 'pasien.dashboard')->name('pasien.dashboard');
+
+    Route::prefix('tes-psikologi')->name('tes.')->group(function () {
+        // riwayat & hasil harus di atas /{tes}, kalau tidak "riwayat" dianggap ID tes
+        Route::get('/riwayat', [TesController::class, 'riwayat'])->name('riwayat');
+        Route::get('/hasil/{hasil}', [TesController::class, 'hasil'])->name('hasil');
+        Route::get('/{tes}', [TesController::class, 'show'])->name('show');
+        Route::post('/{tes}', [TesController::class, 'submit'])->name('submit');
+    });
+});

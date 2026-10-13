@@ -14,6 +14,8 @@ class JawabanPsikologis extends Model
         'poin'
         ];
 
+    protected $casts = ['tanggal' => 'date'];
+    
     public function pertanyaanPsikologis()
     {
         return $this->belongsTo(PertanyaanPsikologis::class, 'id_pertanyaan');
