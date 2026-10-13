@@ -22,7 +22,7 @@ Route::get('/psikolog', [PsikologController::class, 'index'])->name('psikolog.in
 Route::get('/psikolog/{psikolog}', [PsikologController::class, 'show'])->name('psikolog.show');
 
 // Foto psikolog dilayani dari storage/app/public/psikolog (tanpa storage:link)
-Route::get('/foto-psikolog/{file}', function (string $file) {
+Route::get('/foto-psikolog/psikolog/{file}', function (string $file) {
     $path = storage_path('app/public/psikolog/' . basename($file));
 
     abort_unless(is_file($path), 404);

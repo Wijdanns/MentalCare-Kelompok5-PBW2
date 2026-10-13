@@ -29,7 +29,7 @@ class PsikologsTable
                     ->searchable(),
                 ImageColumn::make('foto_profil')
                     ->label('Profil')
-                    ->disk('public')
+                    ->disk('foto')
                     ->circular(),
                 TextColumn::make('biaya')
                     ->label('Biaya')

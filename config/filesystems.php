@@ -47,6 +47,17 @@ return [
             'report' => false,
         ],
 
+        // Disk khusus foto: file tetap di storage/app/public,
+        // URL dilayani lewat route 'foto-psikolog' (tanpa storage:link)
+        'foto' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'url' => '/foto-psikolog',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
