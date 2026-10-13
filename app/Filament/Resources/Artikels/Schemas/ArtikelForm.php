@@ -46,7 +46,7 @@ class ArtikelForm
             FileUpload::make('thumbnail')
                 ->label('Thumbnail')
                 ->image()
-                ->disk('public')
+                ->disk('foto')
                 ->directory('artikel')
                 ->visibility('public')
                 ->imageEditor()

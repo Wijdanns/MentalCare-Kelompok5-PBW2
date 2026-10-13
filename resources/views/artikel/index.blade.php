@@ -60,8 +60,8 @@
             <article class="flex flex-col overflow-hidden rounded-2xl border border-blush-200 bg-white transition hover:border-primary hover:shadow-lg">
 
                 <a href="{{ route('artikel.show', $artikel) }}" class="block">
-                    @if ($artikel->gambar)
-                        <img src="{{ $artikel->gambar }}" alt="{{ $artikel->judul }}"
+                    @if ($artikel->thumbnail)
+                        <img src="{{ route('foto-artikel', basename($artikel->thumbnail)) }}" alt="{{ $artikel->judul }}"
                              class="aspect-[16/10] w-full object-cover" loading="lazy">
                     @else
                         <div class="flex aspect-[16/10] w-full items-center justify-center bg-gradient-to-br from-blush-100 via-blush-200 to-primary/20">

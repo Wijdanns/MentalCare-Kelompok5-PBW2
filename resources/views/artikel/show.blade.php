@@ -22,8 +22,8 @@
         @if ($artikel->user) &middot; Ditulis oleh <span class="font-semibold text-ink">{{ $artikel->user->nama }}</span> @endif
     </p>
 
-    @if ($artikel->gambar)
-        <img src="{{ $artikel->gambar }}" alt="{{ $artikel->judul }}"
+    @if ($artikel->thumbnail)
+        <img src="{{ route('foto-artikel', basename($artikel->thumbnail)) }}" alt="{{ $artikel->judul }}"
              class="mt-8 aspect-[16/9] w-full rounded-3xl object-cover">
     @endif
 
@@ -55,7 +55,7 @@
     @endif
 </article>
 
-{{-- Gaya dasar untuk isi artikel (tidak butuh plugin Typography) --}}
+{{-- Gaya dasar untuk isi artikel --}}
 <style>
     .isi-artikel { font-size: 1.0625rem; line-height: 1.8; color: #374151; overflow-wrap: anywhere; }
     .isi-artikel > * + * { margin-top: 1.1em; }
