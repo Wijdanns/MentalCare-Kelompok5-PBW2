@@ -21,6 +21,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::get('/psikolog', [PsikologController::class, 'index'])->name('psikolog.index');
 Route::get('/psikolog/{psikolog}', [PsikologController::class, 'show'])->name('psikolog.show');
 
+// Foto psikolog dilayani dari storage/app/public/psikolog (tanpa storage:link)
+Route::get('/foto-psikolog/{file}', function (string $file) {
+    $path = storage_path('app/public/psikolog/' . basename($file));
+
+    abort_unless(is_file($path), 404);
+
+    return response()->file($path);
+})->name('foto-psikolog');
+
 Route::get('/tes-psikologi', [TesController::class, 'index'])->name('tes.index');
 
 // Route tambahan dari development (temanmu), sementara sampai controller konsultasi dibuat

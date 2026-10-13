@@ -12,7 +12,7 @@
         {{-- Kolom kiri: foto + ringkasan --}}
         <aside>
             <div class="overflow-hidden rounded-3xl bg-blush-200/80 p-3 shadow-2xl shadow-primary/10">
-                <img src="{{ $psikolog->foto }}" alt="Foto {{ $psikolog->nama }}"
+                <img src="{{ $psikolog->foto_profil ? route('foto-psikolog', basename($psikolog->foto_profil)) : 'https://ui-avatars.com/api/?size=600&background=fce7ef&color=e11d48&name=' . urlencode($psikolog->nama) }}" alt="Foto {{ $psikolog->nama }}"
                      class="aspect-[4/5] w-full rounded-[22px] object-cover">
             </div>
 

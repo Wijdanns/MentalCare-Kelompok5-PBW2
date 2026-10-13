@@ -7,6 +7,10 @@
         ->map(fn ($kata) => \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($kata, 0, 1)))
         ->take(2)->implode('');
 
+    $fotoUrl = $psikolog->foto_profil
+        ? route('foto-psikolog', basename($psikolog->foto_profil))
+        : '';
+
     $tersedia = (bool) ($psikolog->tersedia ?? false);
 
     // Tombol "Pilih jadwal" menuju halaman konsultasi dengan psikolog terpilih
@@ -18,8 +22,8 @@
         'email' => $psikolog->email ?? '',
         'spesialisasi' => $psikolog->spesialisasi ?? '',
         'tarif' => 'Rp' . number_format($psikolog->tarif ?? 0, 0, ',', '.'),
-        'deskripsi' => $psikolog->deskripsi ?? '',
-        'foto' => $psikolog->foto ?? '',
+        'deskripsi' => $psikolog->deskripsi_psikolog ?? '',
+        'foto' => $fotoUrl,
         'inisial' => $inisial,
         'tersedia' => $tersedia,
         'link_jadwal' => $linkJadwal,
@@ -27,8 +31,8 @@
 @endphp
 
 <article x-data class="flex h-full flex-col overflow-hidden rounded-3xl border border-blush-200 bg-white">
-    @if (!empty($psikolog->foto))
-        <img src="{{ $psikolog->foto }}" alt="Foto {{ $psikolog->nama }}"
+    @if ($fotoUrl)
+        <img src="{{ $fotoUrl }}" alt="Foto {{ $psikolog->nama }}"
              class="aspect-[353/256] w-full object-cover" loading="lazy">
     @else
         <div class="flex aspect-[353/256] w-full items-center justify-center bg-gradient-to-br from-blush-100 to-blush-200">

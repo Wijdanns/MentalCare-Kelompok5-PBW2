@@ -56,7 +56,7 @@
             <article class="flex flex-col overflow-hidden rounded-2xl border border-blush-200 bg-white transition hover:border-primary hover:shadow-lg">
 
                 <a href="{{ route('psikolog.show', $psikolog) }}" class="block bg-blush-100">
-                    <img src="{{ $psikolog->foto }}" alt="Foto {{ $psikolog->nama }}"
+                    <img src="{{ $psikolog->foto_profil ? route('foto-psikolog', basename($psikolog->foto_profil)) : 'https://ui-avatars.com/api/?size=600&background=fce7ef&color=e11d48&name=' . urlencode($psikolog->nama) }}" alt="Foto {{ $psikolog->nama }}"
                          class="aspect-[4/3] w-full object-cover" loading="lazy">
                 </a>
 
