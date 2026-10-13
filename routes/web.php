@@ -26,7 +26,7 @@ Route::get('/artikel', [ArtikelController::class, 'index'])->name('artikel.index
 Route::get('/artikel/{artikel}', [ArtikelController::class, 'show'])->name('artikel.show');
 
 // Foto psikolog dilayani dari storage/app/public/psikolog (tanpa storage:link)
-Route::get('/foto-psikolog/{file}', function (string $file) {
+Route::get('/foto-psikolog/psikolog/{file}', function (string $file) {
     $path = storage_path('app/public/psikolog/' . basename($file));
 
     abort_unless(is_file($path), 404);

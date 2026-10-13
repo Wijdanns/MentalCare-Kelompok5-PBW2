@@ -39,7 +39,7 @@ class PsikologForm
                     ->label('Foto Profil')
                     ->image()
                     ->avatar()
-                    ->disk('public')
+                    ->disk('foto')
                     ->directory('psikolog')
                     ->visibility('public')
                     ->imageEditor()
