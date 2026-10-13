@@ -11,7 +11,6 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        // Sudah login: langsung arahkan sesuai role
         if (Auth::check()) {
             return $this->redirectByRole();
         }
@@ -34,8 +33,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        $request->session()->forget('url.intended');
-        
+        // JANGAN forget url.intended di sini — biar pasien kembali ke halaman sebelumnya.
         return $this->redirectByRole();
     }
 
@@ -59,7 +57,7 @@ class AuthController extends Controller
         $user = User::create([
             'nama' => $data['nama'],
             'email' => $data['email'],
-            'password' => $data['password'], 
+            'password' => $data['password'],
             'role' => 'pasien',
         ]);
 
@@ -83,10 +81,22 @@ class AuthController extends Controller
     {
         $user = Auth::user();
 
+        // Admin selalu ke /admin, tidak peduli intended.
         if ($user->role === 'admin') {
+            session()->forget('url.intended');
             return redirect('/admin');
         }
- 
+
+        // Pasien: hormati intended, tapi jangan biarkan ke /admin.
+        $intended = session()->get('url.intended');
+        $path = $intended ? parse_url($intended, PHP_URL_PATH) : null;
+
+        if ($path && ! str_starts_with($path, '/admin')) {
+            return redirect()->intended(route('pasien.dashboard'));
+        }
+
+        session()->forget('url.intended');
+
         return redirect()->route('pasien.dashboard');
     }
 }

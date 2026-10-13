@@ -2,61 +2,92 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Konsultasi;
-use App\Models\Psikolog;
 use App\Models\JadwalPsikolog;
+use App\Models\Konsultasi;
+use App\Models\Pembayaran;
+use App\Models\Psikolog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class KonsultasiController extends Controller
 {
-    /**
-     * Menampilkan halaman konsultasi beserta daftar psikolog.
-     */
-    public function index(Request $request)
+    public function index()
     {
-        // Mengambil data psikolog untuk dikirim ke view blade
-        $psikologs = Psikolog::all();
+        $psikologs = Psikolog::query()
+            ->with(['jadwalTersedia' => function ($q) {
+                $q->orderBy('tanggal')->orderBy('jam_mulai');
+            }])
+            ->get()
+            ->each(function ($p) {
+                // Dipakai di view: ->tersedia
+                $p->tersedia = $p->jadwalTersedia->isNotEmpty();
+            });
 
-        return view('konsultasi', compact('psikologs'));
+        return view('konsultasi.index', compact('psikologs'));
     }
 
-    /**
-     * Menyimpan data pemesanan konsultasi baru.
-     */
     public function store(Request $request)
     {
-        // Validasi fleksibel menyesuaikan form yang ada
-        $validated =$request->validate([
-            'id_psikolog' => 'nullable|exists:psikolog,id',
-            'id_jadwal'   => 'nullable|exists:jadwal_psikolog,id',
-            'metode'      => 'nullable|string',
-            'total_biaya' => 'nullable|numeric',
+        $data = $request->validate([
+            'id_psikolog'       => ['required', 'exists:psikolog,id'],
+            'id_jadwal'         => ['required', 'exists:jadwal_psikolog,id'],
+            'metode'            => ['nullable', 'in:Online,Offline'],
+            'nama'              => ['required', 'string', 'max:255'],
+            'alamat'            => ['nullable', 'string'],
+            'email'             => ['required', 'email'],
+            'jenis_kelamin'     => ['nullable', 'in:Laki-laki,Perempuan'],
+            'usia'              => ['nullable', 'integer', 'min:1', 'max:150'],
+            'metode_pembayaran' => ['required', 'in:Transfer Bank,E-Wallet'],
         ]);
 
-        // Jika data dikirim lengkap, simpan ke database menggunakan model buatan temanmu
-        // (Otomatis mentrigger event `booted` untuk kunci jadwal & buat pembayaran)
-        if (!empty($validated['id_psikolog']) && !empty($validated['id_jadwal'])) {$konsultasi = Konsultasi::create([
-                'id_user'           => \Illuminate\Support\Facades\Auth::id() ?? 1,
-                'id_psikolog'       => $validated['id_psikolog'],
-                'id_jadwal'         => $validated['id_jadwal'],
-                'metode'            => $validated['metode'] ?? 'Online',
+        $psikolog = Psikolog::findOrFail($data['id_psikolog']);
+
+        $jadwal = JadwalPsikolog::where('id', $data['id_jadwal'])
+            ->where('id_psikolog', $psikolog->id)
+            ->where('status', 'Tersedia')
+            ->firstOrFail();
+
+        $konsultasi = DB::transaction(function () use ($data, $psikolog, $jadwal) {
+            $konsultasi = Konsultasi::create([
+                'id_user'           => Auth::id(),
+                'id_psikolog'       => $psikolog->id,
+                'id_jadwal'         => $jadwal->id,
                 'status_konsultasi' => 'Menunggu Pembayaran',
-                'total_biaya'       => $validated['total_biaya'] ?? 0,
+                'total_biaya'       => $psikolog->biaya,
             ]);
 
-            return redirect()->route('konsultasi.konfirmasi', $konsultasi->id)
-                             ->with('success', 'Pemesanan berhasil dibuat.');
+            Pembayaran::create([
+                'id_konsultasi'     => $konsultasi->id,
+                'metode_pembayaran' => $data['metode_pembayaran'],
+                'status_pembayaran' => 'Pending',
+            ]);
+
+            // Tandai jadwal sudah diambil
+            $jadwal->update(['status' => 'Tidak Tersedia']);
+
+            return $konsultasi;
+        });
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success'  => true,
+                'id'       => $konsultasi->id,
+                'redirect' => route('konsultasi.konfirmasi', $konsultasi),
+            ]);
         }
 
-        return back()->with('success', 'Form berhasil diproses.');
+        return redirect()
+            ->route('konsultasi.konfirmasi', $konsultasi)
+            ->with('success', 'Konsultasi berhasil dibuat. Lanjutkan pembayaran.');
     }
 
-    /**
-     * Halaman konfirmasi pemesanan.
-     */
-    public function konfirmasi($id)
+    public function konfirmasi(Konsultasi $konsultasi)
     {
-        $konsultasi = Konsultasi::with(['psikolog', 'jadwal', 'pembayaran'])->findOrFail($id);
+        abort_unless($konsultasi->id_user === Auth::id(), 403);
+
+        $konsultasi->load(['psikolog', 'jadwal', 'pembayaran']);
+
         return view('konsultasi.konfirmasi', compact('konsultasi'));
     }
 }
