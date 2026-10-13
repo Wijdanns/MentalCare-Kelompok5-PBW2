@@ -34,6 +34,8 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        $request->session()->forget('url.intended');
+        
         return $this->redirectByRole();
     }
 
@@ -79,10 +81,12 @@ class AuthController extends Controller
 
     private function redirectByRole(): RedirectResponse
     {
-        if (Auth::user()->role === 'admin') {
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
             return redirect('/admin');
         }
 
-        return redirect()->intended(route('pasien.dashboard'));
+        return redirect()->route('pasien.dashboard');
     }
 }
