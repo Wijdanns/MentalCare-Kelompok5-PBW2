@@ -2,7 +2,7 @@
 
 **MentalCare** adalah aplikasi web platform kesehatan mental berbasis Laravel yang dirancang untuk memudahkan masyarakat dalam melakukan tes psikologis mandiri, membaca artikel edukasi kesehatan mental, serta melakukan pemesanan jadwal konsultasi dengan psikolog profesional.
 
-Proyek tugas akhir mata kuliah **Pengembangan Perangkat Lunak Berbasis Web 2**.
+Proyek tugas akhir mata kuliah **Pemrograman Website 2**.
 **Politeknik Negeri Madiun**, Program Studi **Teknologi Rekayasa Perangkat Lunak**.
 
 ---
