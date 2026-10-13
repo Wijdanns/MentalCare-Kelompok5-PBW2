@@ -86,7 +86,7 @@ class AuthController extends Controller
         if ($user->role === 'admin') {
             return redirect('/admin');
         }
-
+ 
         return redirect()->route('pasien.dashboard');
     }
 }
