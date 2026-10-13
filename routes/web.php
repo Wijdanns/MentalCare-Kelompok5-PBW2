@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PsikologController;
 use App\Http\Controllers\TesController;
+use App\Http\Controllers\KonsultasiController;
 use App\Http\Middleware\EnsureRole;
 use Illuminate\Support\Facades\Route;
 
@@ -45,10 +46,14 @@ Route::get('/artikel/{artikel}', [ArtikelController::class, 'show'])->name('arti
 
 Route::get('/tes-psikologi', [TesController::class, 'index'])->name('tes.index');
 
-// Route tambahan dari development (temanmu), sementara sampai controller konsultasi dibuat
-Route::get('/konsultasi', function () {
-    return view('konsultasi');
-})->name('konsultasi.index');
+// ---------- Route Konsultasi ----------
+Route::get('/konsultasi', [KonsultasiController::class, 'index'])->name('konsultasi.index');
+Route::post('/konsultasi', [KonsultasiController::class, 'store'])->name('konsultasi.store');
+
+Route::get('/konsultasi/konfirmasi/{id}', function ($id) {
+    $konsultasi = \App\Models\Konsultasi::with(['psikolog', 'jadwal', 'pembayaran'])->findOrFail($id);
+    return view('konsultasi.konfirmasi', compact('konsultasi'));
+})->name('konsultasi.konfirmasi');
 
 // ---------- Area pasien (wajib login) ----------
 Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
