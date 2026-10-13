@@ -19,7 +19,7 @@
 
             {{-- Artikel + dropdown (muncul saat hover / fokus keyboard) --}}
             <div class="group relative">
-                <a href="{{ url('/artikel') }}" class="flex items-center gap-1 {{ request()->is('artikel*') ? $on : $off }}">
+                <a href="{{ route('artikel.index') }}" class="flex items-center gap-1 {{ request()->is('artikel*') ? $on : $off }}">
                     Artikel
                     <svg class="h-3.5 w-3.5 transition group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                 </a>
