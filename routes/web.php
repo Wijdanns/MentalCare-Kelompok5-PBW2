@@ -1,12 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Middleware\EnsureRole;
-use App\Http\Controllers\TesController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PsikologController;
+use App\Http\Controllers\TesController;
+use App\Http\Middleware\EnsureRole;
+use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'home')->name('home');
+// ---------- Publik ----------
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -16,9 +18,17 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+Route::get('/psikolog', [PsikologController::class, 'index'])->name('psikolog.index');
+Route::get('/psikolog/{psikolog}', [PsikologController::class, 'show'])->name('psikolog.show');
+
 Route::get('/tes-psikologi', [TesController::class, 'index'])->name('tes.index');
 
-// Area pasien (wajib login)
+// Route tambahan dari development (temanmu), sementara sampai controller konsultasi dibuat
+Route::get('/konsultasi', function () {
+    return view('konsultasi');
+})->name('konsultasi.index');
+
+// ---------- Area pasien (wajib login) ----------
 Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
     Route::view('/dashboard', 'pasien.dashboard')->name('pasien.dashboard');
 
@@ -30,10 +40,3 @@ Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
         Route::post('/{tes}', [TesController::class, 'submit'])->name('submit');
     });
 });
-
-// Route tambahan dari development (temanmu)
-Route::get('/konsultasi', function () {
-    return view('konsultasi');
-});
-
-Route::get('/psikolog', [PsikologController::class, 'index'])->name('psikolog.index');

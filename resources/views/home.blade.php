@@ -29,7 +29,7 @@
                 Mulai konsultasi
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
             </a>
-            <a href="{{ url('/psikolog') }}" class="w-full rounded-xl border border-gray-200 bg-white px-6 py-3.5 text-center font-semibold text-ink transition hover:border-primary hover:text-primary sm:w-auto">
+            <a href="{{ route('psikolog.index') }}" class="w-full rounded-xl border border-gray-200 bg-white px-6 py-3.5 text-center font-semibold text-ink transition hover:border-primary hover:text-primary sm:w-auto">
                 Lihat psikolog
             </a>
         </div>
@@ -64,7 +64,7 @@
             </x-card-layanan>
 
             <x-card-layanan judul="Daftar Psikolog"
-                            deskripsi="Temukan psikolog profesional yang sesuai dengan kebutuhanmu." :href="url('/psikolog')">
+                            deskripsi="Temukan psikolog profesional yang sesuai dengan kebutuhanmu." :href="route('psikolog.index')">
                 <x-slot name="icon">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
                 </x-slot>
@@ -87,7 +87,7 @@
             <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">Psikolog pilihan</p>
             <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">Bertemu dengan ahlinya</h2>
         </div>
-        <a href="{{ url('/psikolog') }}" class="inline-flex shrink-0 items-center gap-2 font-semibold text-primary hover:text-primary-dark">
+        <a href="{{ route('psikolog.index') }}" class="inline-flex shrink-0 items-center gap-2 font-semibold text-primary hover:text-primary-dark">
             Lihat semua
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
         </a>
