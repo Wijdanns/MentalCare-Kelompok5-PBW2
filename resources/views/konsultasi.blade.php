@@ -5,7 +5,7 @@
 @section('content')
 @php
     // Data psikolog dikirim dari controller (BE) sebagai $psikologs.
-    // Belum ada data = daftar kosong (tanpa data dummy).
+    // Belum ada data = daftar kosong
     $psikologs = $psikologs ?? collect();
     $daftarPsikolog = $psikologs->map(fn ($p) => [
         'id' => (string) $p->id,
@@ -111,11 +111,9 @@
           <label class="block text-xs font-bold text-gray-800 mb-1">Pilih sesi pertemuan</label>
           <select @change="setSesi($event.target.value)" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white">
             <option value="">Pilih sesi pertemuan</option>
-            <option value="13:00-14:15">Sesi 1 — 13:00 sampai 14:15</option>
-            <option value="15:15-16:30">Sesi 2 — 15:15 sampai 16:30</option>
-            <option value="17:30-18:45">Sesi 3 — 17:30 sampai 18:45</option>
-            <option value="19:45-21:00">Sesi 4 — 19:45 sampai 21:00</option>
           </select>
+          {{-- TODO: isi pilihan sesi dari jadwal psikolog (BE). Belum ada data jadwal. --}}
+          <p class="mt-1 text-xs text-gray-400">Belum ada jadwal sesi yang tersedia.</p>
         </div>
 
         <div>
@@ -244,7 +242,7 @@
           </div>
           <div class="flex justify-between py-1 border-b border-pink-100">
             <span class="text-gray-400">Jadwal</span>
-            <span class="font-bold text-gray-800" x-text="`${formData.tanggal}, ${formData.jam_mulai}–${formData.jam_selesai}`"></span>
+            <span class="font-bold text-gray-800" x-text="formData.jam_mulai ? `${formData.tanggal}, ${formData.jam_mulai}–${formData.jam_selesai}` : formData.tanggal"></span>
           </div>
           <div class="flex justify-between py-1">
             <span class="text-gray-400">Metode sesi</span>
@@ -271,7 +269,7 @@
       <div class="bg-pink-50/50 rounded-xl p-4 text-xs space-y-2.5 border border-pink-100">
         <div class="flex justify-between border-b border-pink-100/60 pb-1.5"><span class="text-gray-500">Nama Pemesan</span><span class="font-semibold text-gray-800" x-text="formData.nama || '-'"></span></div>
         <div class="flex justify-between border-b border-pink-100/60 pb-1.5"><span class="text-gray-500">Psikolog</span><span class="font-semibold text-gray-800" x-text="psikologTerpilih ? psikologTerpilih.nama : '-'"></span></div>
-        <div class="flex justify-between border-b border-pink-100/60 pb-1.5"><span class="text-gray-500">Waktu Konsultasi</span><span class="font-semibold text-gray-800" x-text="`${formData.tanggal} (${formData.jam_mulai} - ${formData.jam_selesai})`"></span></div>
+        <div class="flex justify-between border-b border-pink-100/60 pb-1.5"><span class="text-gray-500">Waktu Konsultasi</span><span class="font-semibold text-gray-800" x-text="formData.jam_mulai ? `${formData.tanggal} (${formData.jam_mulai} - ${formData.jam_selesai})` : formData.tanggal"></span></div>
         <div class="flex justify-between"><span class="text-gray-500">Metode Pembayaran</span><span class="font-semibold text-rose-600" x-text="formData.metode_pembayaran || '-'"></span></div>
       </div>
 
