@@ -15,7 +15,7 @@ class PembayaranController extends Controller
      */
     public function konfirmasi(Request $request, Konsultasi $konsultasi)
     {
-        abort_unless($konsultasi->id_user === Auth::id(), 403);
+        abort_unless((int) $konsultasi->id_user === (int) Auth::id(), 403);
 
         DB::transaction(function () use ($konsultasi) {
             $pembayaran = Pembayaran::firstOrCreate(
@@ -50,7 +50,7 @@ class PembayaranController extends Controller
      */
     public function gagal(Request $request, Konsultasi $konsultasi)
     {
-        abort_unless($konsultasi->id_user === Auth::id(), 403);
+        abort_unless((int) $konsultasi->id_user === (int) Auth::id(), 403);
 
         $pembayaran = Pembayaran::where('id_konsultasi', $konsultasi->id)->firstOrFail();
         $pembayaran->update(['status_pembayaran' => 'Gagal']);
