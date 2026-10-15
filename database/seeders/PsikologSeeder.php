@@ -2,35 +2,44 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Psikolog;
+use Illuminate\Database\Seeder;
 
 class PsikologSeeder extends Seeder
 {
     public function run(): void
     {
-        Psikolog::create([
-            'nama' => 'Dr. Ani Wijaya, M.Psi.',
-            'spesialisasi' => 'Spesialis Kecemasan & Depresi',
-            'kategori' => 'kecemasan',
-            'pengalaman_tahun' => 5,
-            'is_available' => true,
-        ]);
+        $data = [
+            [
+                'nama' => 'Dr. Ani Wijaya, M.Psi.',
+                'email' => 'ani.wijaya@mentalcare.test',
+                'spesialis' => 'Spesialis Kecemasan & Depresi',
+                'deskripsi_psikolog' => 'Membantu klien mengenali dan mengelola kecemasan serta suasana hati yang menurun, '
+                    . 'dengan pendekatan yang tenang dan terstruktur.',
+                'biaya' => 150000,
+            ],
+            [
+                'nama' => 'Budi Santoso, S.Psi., M.Psi.',
+                'email' => 'budi.santoso@mentalcare.test',
+                'spesialis' => 'Konselor Karir & Pengembangan Diri',
+                'deskripsi_psikolog' => 'Mendampingi klien yang bingung menentukan arah karier, menghadapi tekanan kerja, '
+                    . 'dan ingin berkembang dengan lebih percaya diri.',
+                'biaya' => 175000,
+            ],
+            [
+                'nama' => 'Citra Lestari, M.Psi.',
+                'email' => 'citra.lestari@mentalcare.test',
+                'spesialis' => 'Psikolog Keluarga & Relasi',
+                'deskripsi_psikolog' => 'Menemani individu dan pasangan memahami pola komunikasi, '
+                    . 'menyelesaikan konflik, dan membangun hubungan yang lebih sehat.',
+                'biaya' => 200000,
+            ],
+        ];
 
-        Psikolog::create([
-            'nama' => 'Budi Santoso, S.Psi., M.Psi.',
-            'spesialisasi' => 'Konselor Karir & Pengembangan Diri',
-            'kategori' => 'karier',
-            'pengalaman_tahun' => 3,
-            'is_available' => true,
-        ]);
-
-        Psikolog::create([
-            'nama' => 'Citra Lestari, M.Psi.',
-            'spesialisasi' => 'Psikolog Keluarga & Relasi',
-            'kategori' => 'relasi',
-            'pengalaman_tahun' => 7,
-            'is_available' => true,
-        ]);
+        Psikolog::unguarded(function () use ($data) {
+            foreach ($data as $item) {
+                Psikolog::updateOrCreate(['email' => $item['email']], $item);
+            }
+        });
     }
 }
