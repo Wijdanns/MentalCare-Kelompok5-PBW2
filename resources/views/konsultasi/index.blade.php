@@ -385,7 +385,13 @@
           </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        @if(session('success'))
+          <div class="p-3 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg">
+            {{ session('success') }}
+          </div>
+        @endif
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
           <a href="{{ route('pasien.dashboard') }}"
              class="w-full sm:w-auto bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition text-center">
             Ke Dashboard

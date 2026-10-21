@@ -90,4 +90,15 @@ class KonsultasiController extends Controller
 
         return view('konsultasi.konfirmasi', compact('konsultasi'));
     }
+
+    public function dashboardPasien()
+    {
+        // Ambil riwayat konsultasi milik pasien yang sedang login lengkap dengan psikolog dan ulasannya
+        $riwayatKonsultasi = Konsultasi::where('id_user', Auth::id())
+            ->with(['psikolog', 'reviewPsikolog', 'pembayaran'])
+            ->latest()
+            ->get();
+
+        return view('pasien.dashboard', compact('riwayatKonsultasi'));
+    }
 }

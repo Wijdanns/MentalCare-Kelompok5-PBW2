@@ -7,6 +7,7 @@ use App\Http\Controllers\PsikologController;
 use App\Http\Controllers\TesController;
 use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Middleware\EnsureRole;
 use Illuminate\Support\Facades\Route;
 
@@ -56,8 +57,7 @@ Route::get('/konsultasi/go-login', function () {
 
 // ---------- Area pasien (wajib login) ----------
 Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
-    Route::view('/dashboard', 'pasien.dashboard')->name('pasien.dashboard');
-
+Route::get('/dashboard', [KonsultasiController::class, 'dashboardPasien'])->name('pasien.dashboard');
     Route::prefix('tes-psikologi')->name('tes.')->group(function () {
         // riwayat & hasil harus di atas /{tes}, kalau tidak "riwayat" dianggap ID tes
         Route::get('/riwayat', [TesController::class, 'riwayat'])->name('riwayat');
@@ -70,4 +70,6 @@ Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
     Route::post('/konsultasi', [KonsultasiController::class, 'store'])->name('konsultasi.store');
     Route::get('/konsultasi/konfirmasi/{konsultasi}', [KonsultasiController::class, 'konfirmasi'])->name('konsultasi.konfirmasi');
     Route::post('/konsultasi/{konsultasi}/pembayaran/konfirmasi', [PembayaranController::class, 'konfirmasi'])->name('pembayaran.konfirmasi');
+
+    route::post('/konsultasi/{id}/review', [ReviewController::class, 'store'])->name('review.store');
 });

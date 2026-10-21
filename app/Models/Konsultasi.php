@@ -42,8 +42,11 @@ class Konsultasi extends Model
         });
     }
 
-    public function user()       { return $this->belongsTo(User::class, 'id_user'); }
-    public function psikolog()   { return $this->belongsTo(Psikolog::class, 'id_psikolog'); }
-    public function jadwal()     { return $this->belongsTo(JadwalPsikolog::class, 'id_jadwal'); }
-    public function pembayaran() { return $this->hasOne(Pembayaran::class, 'id_konsultasi'); }
+    public function user()           { return $this->belongsTo(User::class, 'id_user'); }
+    public function psikolog()       { return $this->belongsTo(Psikolog::class, 'id_psikolog'); }
+    public function jadwal()         { return $this->belongsTo(JadwalPsikolog::class, 'id_jadwal'); }
+    public function pembayaran()     { return $this->hasOne(Pembayaran::class, 'id_konsultasi'); }
+    
+    // RELASI TAMBAHAN UNTUK ULASAN PSIKOLOG
+    public function reviewPsikolog() { return $this->hasOne(ReviewPsikolog::class, 'id_konsultasi'); }
 }
