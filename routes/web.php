@@ -76,8 +76,13 @@ Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
     Route::post('/konsultasi/{konsultasi}/pembayaran/konfirmasi', [PembayaranController::class, 'konfirmasi'])->name('pembayaran.konfirmasi');
 });
 
-// Ulasan
+// Ulasan (Area wajib login untuk Create, Update, Delete)
+Route::middleware(['auth'])->group(function () {
+    // TAMBAH REQUEST ULASAN BARU (POST)
     Route::post('/ulasan', [UlasanController::class, 'store'])->name('ulasan.store');
+
+    // Rute Edit & Hapus
     Route::get('/ulasan/{ulasan}/edit', [UlasanController::class, 'edit'])->name('ulasan.edit');
     Route::put('/ulasan/{ulasan}', [UlasanController::class, 'update'])->name('ulasan.update');
     Route::delete('/ulasan/{ulasan}', [UlasanController::class, 'destroy'])->name('ulasan.destroy');
+});

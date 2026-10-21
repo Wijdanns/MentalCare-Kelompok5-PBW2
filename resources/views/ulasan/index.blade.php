@@ -16,7 +16,6 @@
         Bagikan pengalamanmu supaya pasien lain lebih mudah memilih psikolog yang tepat.
     </p>
 
-    {{-- Kondisional: ringkasan hanya tampil kalau sudah ada ulasan --}}
     @if ($jumlahUlasan > 0)
         <div class="mt-8 inline-flex items-center gap-4 rounded-2xl bg-white px-6 py-4 shadow-sm">
             <span class="text-4xl font-extrabold text-primary">{{ number_format($rataRata, 1, ',', '.') }}</span>
@@ -30,7 +29,7 @@
 
 <section class="mx-auto max-w-3xl px-5 py-12 sm:px-8 sm:py-16">
 
-    {{-- Pesan sukses dari controller --}}
+    {{-- Pesan sukses --}}
     @if (session('success'))
         <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
             {{ session('success') }}
@@ -50,6 +49,18 @@
             <div class="rounded-3xl border border-blush-200 bg-white p-6 shadow-xl shadow-primary/10 sm:p-8">
                 <h2 class="text-xl font-bold tracking-tight">Tulis ulasanmu</h2>
 
+                {{-- Ringkasan pesan error validasi --}}
+                @if ($errors->any())
+                    <div class="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        <p class="font-semibold">Ulasan belum bisa dikirim:</p>
+                        <ul class="mt-1 list-disc pl-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 @if ($psikologs->isEmpty())
                     <p class="mt-4 text-sm text-gray-500">Belum ada psikolog yang bisa kamu ulas.</p>
                 @else
@@ -62,7 +73,6 @@
                                     class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:border-primary focus:outline-none">
                                 <option value="">Pilih psikolog</option>
                                 @foreach ($psikologs as $psikolog)
-                                    {{-- old(): pilihan tetap terpilih kalau validasi gagal --}}
                                     <option value="{{ $psikolog->id }}" @selected((string) old('id_psikolog') === (string) $psikolog->id)>
                                         {{ $psikolog->nama }}
                                     </option>
@@ -104,14 +114,12 @@
     <div class="mt-12 space-y-5">
         <h2 class="text-xl font-bold tracking-tight">Semua ulasan</h2>
 
-        {{-- tampilan kosong --}}
         @if ($ulasans->isEmpty())
             <p class="rounded-2xl border border-dashed border-blush-200 bg-white p-10 text-center text-gray-500">
                 Belum ada ulasan.
             </p>
         @endif
 
-        {{-- Perulangan: satu kartu per ulasan --}}
         @foreach ($ulasans as $ulasan)
             <article class="rounded-2xl border border-blush-200 bg-white p-5 sm:p-6">
                 <div class="flex items-start justify-between gap-4">
@@ -148,7 +156,7 @@
         @endforeach
     </div>
 
-    {{-- Navigasi halaman (paginate) --}}
+    {{-- Navigasi halaman --}}
     <div class="mt-8">
         {{ $ulasans->links() }}
     </div>

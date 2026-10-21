@@ -17,14 +17,11 @@ class UlasanController extends Controller
      */
     public function index(): View
     {
-        // Ambil ulasan terbaru dengan paginasi (5 per halaman) beserta relasinya
         $ulasans = Ulasan::with(['user', 'psikolog'])->latest()->paginate(5);
 
-        // Hitung total dan rata-rata rating
         $jumlahUlasan = Ulasan::count();
         $rataRata = $jumlahUlasan > 0 ? round(Ulasan::avg('rating'), 1) : null;
 
-        // Ambil daftar psikolog yang BELUM diulas oleh user yang sedang login
         $psikologs = Psikolog::query()
             ->when(Auth::check(), fn ($q) => $q->whereNotIn(
                 'id', Ulasan::where('id_user', Auth::id())->select('id_psikolog')
@@ -40,12 +37,11 @@ class UlasanController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Validasi Server-side lengkap dengan custom pesan error
         $data = $request->validate([
             'id_psikolog' => [
                 'required', 
                 'exists:psikolog,id',
-                Rule::unique('ulasan', 'id_psikolog')->where('id_user', Auth::id()) // 1 user = 1 ulasan per psikolog
+                Rule::unique('ulasan', 'id_psikolog')->where('id_user', Auth::id())
             ],
             'rating' => ['required', 'integer', 'between:1,5'],
             'komentar' => ['required', 'string', 'min:10', 'max:500'],
@@ -56,10 +52,8 @@ class UlasanController extends Controller
             'komentar.required' => 'Komentar wajib diisi.',
             'komentar.min' => 'Komentar minimal 10 karakter.',
             'komentar.max' => 'Komentar maksimal 500 karakter.',
-            // Pesan error lain bisa ditambahkan jika perlu
         ]);
 
-        // Simpan ke database
         Ulasan::create([
             'id_user' => Auth::id(),
             'id_psikolog' => $data['id_psikolog'],
@@ -75,7 +69,7 @@ class UlasanController extends Controller
      */
     public function edit(Ulasan $ulasan): View
     {
-        $this->pastikanPemilik($ulasan); // Cek keamanan hak akses
+        $this->pastikanPemilik($ulasan);
         $ulasan->load('psikolog');
 
         return view('ulasan.edit', compact('ulasan'));
@@ -86,9 +80,8 @@ class UlasanController extends Controller
      */
     public function update(Request $request, Ulasan $ulasan): RedirectResponse
     {
-        $this->pastikanPemilik($ulasan); // Cek keamanan hak akses
+        $this->pastikanPemilik($ulasan);
 
-        // Validasi (id_psikolog tidak divalidasi karena tidak boleh diganti)
         $data = $request->validate([
             'rating' => ['required', 'integer', 'between:1,5'],
             'komentar' => ['required', 'string', 'min:10', 'max:500'],
@@ -105,11 +98,11 @@ class UlasanController extends Controller
     }
 
     /**
-     * DELETE: Hapus ulasan .
+     * DELETE: Hapus ulasan.
      */
     public function destroy(Ulasan $ulasan): RedirectResponse
     {
-        $this->pastikanPemilik($ulasan); // Cek keamanan hak akses
+        $this->pastikanPemilik($ulasan);
         $ulasan->delete();
 
         return redirect()->route('ulasan.index')->with('success', 'Ulasan berhasil dihapus.');
