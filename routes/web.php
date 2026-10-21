@@ -6,9 +6,11 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PsikologController;
 use App\Http\Controllers\TesController;
 use App\Http\Controllers\KonsultasiController;
+use App\Http\Controllers\MoodLogController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Middleware\EnsureRole;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DailyTipController;
 
 // ---------- Publik ----------
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -65,6 +67,11 @@ Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
         Route::get('/{tes}', [TesController::class, 'show'])->name('show');
         Route::post('/{tes}', [TesController::class, 'submit'])->name('submit');
     });
+
+    Route::get('/mood', [MoodLogController::class, 'index'])->name('pasien.mood.index');
+    Route::post('/mood', [MoodLogController::class, 'store'])->name('pasien.mood.store');
+    Route::put('/mood/{id}', [MoodLogController::class, 'update'])->name('pasien.mood.update');
+    Route::delete('/mood/{id}', [MoodLogController::class, 'destroy'])->name('pasien.mood.destroy');
 
 
     Route::post('/konsultasi', [KonsultasiController::class, 'store'])->name('konsultasi.store');

@@ -76,7 +76,7 @@
                                 @if ($isAdmin)
                                     <a href="{{ url('/admin') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Panel Admin</a>
                                 @else
-                                    <a href="{{ route('pasien.dashboard') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Akun saya</a>
+                                    <a href="{{ route('pasien.mood.index') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Jurnal Mood</a>
                                     {{-- tambah "Riwayat Konsultasi" dan "Hasil Tes" kalau halamannya sudah ada --}}
                                 @endif
 
