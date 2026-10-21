@@ -34,6 +34,10 @@
             </div>
 
             <a href="{{ url('/tes-psikologi') }}" class="{{ request()->is('tes*') ? $on : $off }}">Tes Psikologi</a>
+
+            @if (! auth()->check() || auth()->user()->role === 'pasien')
+                <a href="{{ route('jurnal.index') }}" class="{{ request()->is('jurnal*') ? $on : $off }}">Jurnal</a>
+            @endif
         </nav>
 
         {{-- Tombol auth desktop --}}
@@ -77,6 +81,7 @@
                                     <a href="{{ url('/admin') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Panel Admin</a>
                                 @else
                                     <a href="{{ route('pasien.dashboard') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Akun saya</a>
+                                    <a href="{{ route('jurnal.index') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Jurnal saya</a>
                                     {{-- tambah "Riwayat Konsultasi" dan "Hasil Tes" kalau halamannya sudah ada --}}
                                 @endif
 
@@ -119,6 +124,10 @@
                 </div>
             </details>
             <a href="{{ url('/tes-psikologi') }}" class="rounded-lg px-3 py-2.5 text-gray-700">Tes Psikologi</a>
+            @if (! auth()->check() || auth()->user()->role === 'pasien')
+                <a href="{{ route('jurnal.index') }}"
+                class="rounded-lg px-3 py-2.5 {{ request()->is('jurnal*') ? 'bg-blush-100 text-primary' : 'text-gray-700' }}">Jurnal</a>
+            @endif
             <div class="mt-3 border-t border-blush-200 pt-4">
                 @guest
                     <div class="flex gap-3">
@@ -148,6 +157,10 @@
                     class="block rounded-lg px-3 py-2.5 text-gray-700 hover:bg-blush-100">
                         {{ $user->role === 'admin' ? 'Panel Admin' : 'Akun saya' }}
                     </a>
+
+                    @if ($user->role === 'pasien')
+                        <a href="{{ route('jurnal.index') }}" class="block rounded-lg px-3 py-2.5 text-gray-700 hover:bg-blush-100">Jurnal saya</a>
+                    @endif
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
