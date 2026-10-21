@@ -16,12 +16,11 @@
     $topMood    = $total ? $moods->groupBy('mood')->sortByDesc(fn ($g) => $g->count())->keys()->first() : null;
 @endphp
 
-
 <div class="mx-auto max-w-3xl px-4 py-10">
 
     {{-- Header --}}
     <div class="mb-6 rounded-3xl bg-gradient-to-br from-rose-600 to-rose-400 p-8 text-white shadow-lg">
-        <h1 class="mb-1 text-2xl font-bold">Jurnal Suasana Hati </h1>
+        <h1 class="mb-1 text-2xl font-bold">Jurnal Suasana Hati</h1>
         <p class="text-white/90">Catat perasaanmu setiap hari untuk memantau kesehatan mentalmu.</p>
     </div>
 
@@ -44,7 +43,7 @@
     {{-- Pesan sukses --}}
     @if(session('success'))
         <div id="flash" class="mb-6 flex items-center justify-between rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800 shadow-sm">
-            <span>✅ {{ session('success') }}</span>
+            <span>{{ session('success') }}</span>
             <button type="button" onclick="document.getElementById('flash').remove()" class="text-xl leading-none" aria-label="Tutup">&times;</button>
         </div>
     @endif
@@ -90,7 +89,7 @@
         </form>
     </div>
 
-    {{-- Riwayat mood --}}
+    {{-- Riwayat mood (hanya milik user yang login) --}}
     <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
         <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-bold text-gray-800">Riwayat Mood Saya</h2>
@@ -162,6 +161,7 @@
                             <label for="editMood{{ $item->id }}" class="mb-2 block text-sm font-semibold text-gray-700">Mood</label>
                             <select name="mood" id="editMood{{ $item->id }}"
                                     class="w-full rounded-xl border-2 bg-white px-4 py-3 outline-none focus:border-rose-500 {{ $errors->getBag($bag)->has('mood') ? 'border-red-500' : 'border-gray-200' }}">
+                                <option value="">-- Pilih Mood --</option>
                                 @foreach($moodOptions as $label => $o)
                                     <option value="{{ $label }}" @selected($valMood === $label)>{{ $o['emoji'] }} {{ $label }}</option>
                                 @endforeach
@@ -203,4 +203,14 @@
     </div>
 </div>
 
+{{-- Buka lagi modal edit kalau validasinya gagal --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        @foreach($moods as $item)
+            @if($errors->hasBag('update_' . $item->id))
+                document.getElementById('editModal{{ $item->id }}').showModal();
+            @endif
+        @endforeach
+    });
+</script>
 @endsection

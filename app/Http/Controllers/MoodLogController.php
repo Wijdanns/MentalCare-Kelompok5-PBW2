@@ -10,7 +10,7 @@ class MoodLogController extends Controller
 {
     private const MOODS = 'Sangat Baik,Baik,Biasa,Cemas,Sedih';
 
-    // Ambil query yang SELALU dibatasi ke user yang login
+    // Query yang SELALU dibatasi ke user yang login
     private function milikSaya()
     {
         return MoodLog::where('user_id', Auth::id());
@@ -29,9 +29,11 @@ class MoodLogController extends Controller
     {
         $request->validate([
             'mood'    => 'required|in:' . self::MOODS,
-            'catatan' => 'nullable|string|max:255',
+            'catatan' => 'required|string|max:255',
         ], [
             'mood.required' => 'Pilih suasana hati Anda hari ini!',
+            'mood.in'       => 'Mood yang dipilih tidak valid.',
+            'catatan.required' => 'Catatan tidak boleh kosong.',
             'catatan.max'   => 'Catatan maksimal 255 karakter.',
         ]);
 
@@ -51,10 +53,12 @@ class MoodLogController extends Controller
 
         $request->validateWithBag('update_' . $mood->id, [
             'mood'    => 'required|in:' . self::MOODS,
-            'catatan' => 'nullable|string|max:255',
+            'catatan' => 'required|string|max:255',
         ], [
-            'mood.required' => 'Pilih suasana hati Anda!',
+            'mood.required' => 'Mood tidak boleh kosong, silakan pilih salah satu!',
+            'mood.in'       => 'Mood yang dipilih tidak valid.',
             'catatan.max'   => 'Catatan maksimal 255 karakter.',
+            'catatan.required' => 'Catatan tidak boleh kosong.',
         ]);
 
         $mood->update([
