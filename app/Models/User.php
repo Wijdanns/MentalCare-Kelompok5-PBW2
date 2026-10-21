@@ -60,6 +60,11 @@ class User extends Authenticatable implements FilamentUser, HasName
         return $this->hasMany(Artikel::class, 'id_user');
     }
 
+    public function jurnal() 
+    { 
+        return $this->hasMany(Jurnal::class, 'id_user'); 
+    }
+
     /**
      * Get the attributes that should be cast.
      *

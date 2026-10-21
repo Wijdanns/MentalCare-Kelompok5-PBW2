@@ -7,6 +7,7 @@ use App\Http\Controllers\PsikologController;
 use App\Http\Controllers\TesController;
 use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\JurnalController;
 use App\Http\Middleware\EnsureRole;
 use Illuminate\Support\Facades\Route;
 
@@ -70,4 +71,8 @@ Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
     Route::post('/konsultasi', [KonsultasiController::class, 'store'])->name('konsultasi.store');
     Route::get('/konsultasi/konfirmasi/{konsultasi}', [KonsultasiController::class, 'konfirmasi'])->name('konsultasi.konfirmasi');
     Route::post('/konsultasi/{konsultasi}/pembayaran/konfirmasi', [PembayaranController::class, 'konfirmasi'])->name('pembayaran.konfirmasi');
+
+    Route::resource('jurnal', JurnalController::class)
+        ->parameters(['jurnal' => 'jurnal'])
+        ->whereNumber('jurnal');
 });
