@@ -8,6 +8,7 @@ use App\Http\Controllers\TesController;
 use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Middleware\EnsureRole;
+use App\Http\Controllers\UlasanController;
 use Illuminate\Support\Facades\Route;
 
 // ---------- Publik ----------
@@ -47,6 +48,9 @@ Route::get('/artikel/{artikel}', [ArtikelController::class, 'show'])->name('arti
 
 Route::get('/tes-psikologi', [TesController::class, 'index'])->name('tes.index');
 
+// Ulasan: daftar ulasan bisa dilihat siapa saja
+Route::get('/ulasan', [UlasanController::class, 'index'])->name('ulasan.index');
+
 // ---------- Route Konsultasi ----------
 Route::get('/konsultasi', [KonsultasiController::class, 'index'])->name('konsultasi.index');
 Route::get('/konsultasi/go-login', function () {
@@ -71,3 +75,9 @@ Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
     Route::get('/konsultasi/konfirmasi/{konsultasi}', [KonsultasiController::class, 'konfirmasi'])->name('konsultasi.konfirmasi');
     Route::post('/konsultasi/{konsultasi}/pembayaran/konfirmasi', [PembayaranController::class, 'konfirmasi'])->name('pembayaran.konfirmasi');
 });
+
+// Ulasan
+    Route::post('/ulasan', [UlasanController::class, 'store'])->name('ulasan.store');
+    Route::get('/ulasan/{ulasan}/edit', [UlasanController::class, 'edit'])->name('ulasan.edit');
+    Route::put('/ulasan/{ulasan}', [UlasanController::class, 'update'])->name('ulasan.update');
+    Route::delete('/ulasan/{ulasan}', [UlasanController::class, 'destroy'])->name('ulasan.destroy');

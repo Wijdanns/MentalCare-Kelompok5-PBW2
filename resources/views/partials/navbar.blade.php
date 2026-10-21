@@ -34,6 +34,7 @@
             </div>
 
             <a href="{{ url('/tes-psikologi') }}" class="{{ request()->is('tes*') ? $on : $off }}">Tes Psikologi</a>
+            <a href="{{ route('ulasan.index') }}" class="{{ request()->is('ulasan*') ? $on : $off }}">Ulasan</a>
         </nav>
 
         {{-- Tombol auth desktop --}}
@@ -119,6 +120,8 @@
                 </div>
             </details>
             <a href="{{ url('/tes-psikologi') }}" class="rounded-lg px-3 py-2.5 text-gray-700">Tes Psikologi</a>
+            <div class="mt-3 border-t border-blush-200 pt-4">
+             <a href="{{ route('ulasan.index') }}" class="rounded-lg px-3 py-2.5 text-gray-700">Ulasan</a>
             <div class="mt-3 border-t border-blush-200 pt-4">
                 @guest
                     <div class="flex gap-3">
