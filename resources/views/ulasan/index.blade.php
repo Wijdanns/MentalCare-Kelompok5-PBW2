@@ -100,8 +100,6 @@
         @endif
     @endauth
 
-    <div 
-
     {{-- ============ DAFTAR ULASAN ============ --}}
     <div class="mt-12 space-y-5">
         <h2 class="text-xl font-bold tracking-tight">Semua ulasan</h2>
