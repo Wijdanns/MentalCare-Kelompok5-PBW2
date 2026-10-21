@@ -36,7 +36,7 @@
         </div>
     @endif
 
-    {{-- ============ FORM TULIS ULASAN ============ --}}
+    {{-- ============ FORM TULIS ULASAN (REQUEST TAMBAH) ============ --}}
     @guest
         <div class="rounded-3xl border border-blush-200 bg-white p-6 text-center sm:p-8">
             <p class="text-gray-600">Masuk dulu untuk menulis ulasan.</p>

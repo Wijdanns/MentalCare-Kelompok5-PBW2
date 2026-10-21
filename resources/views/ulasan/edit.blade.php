@@ -11,6 +11,7 @@
         <h1 class="text-2xl font-bold tracking-tight">Edit ulasan</h1>
         <p class="mt-1 text-sm text-gray-500">untuk {{ $ulasan->psikolog?->nama ?? 'Psikolog' }}</p>
 
+        {{-- Ringkasan pesan error validasi --}}
         @if ($errors->any())
             <div class="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 <p class="font-semibold">Perubahan belum bisa disimpan:</p>
@@ -28,6 +29,7 @@
 
             <div>
                 <span class="mb-1 block text-sm font-semibold">Rating</span>
+                {{-- old() mempertahankan rating yang baru diklik jika terjadi error --}}
                 <x-input-bintang :nilai="old('rating', $ulasan->rating)" />
                 @error('rating')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
