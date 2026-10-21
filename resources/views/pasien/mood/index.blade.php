@@ -203,7 +203,6 @@
     </div>
 </div>
 
-{{-- Buka lagi modal edit kalau validasinya gagal --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         @foreach($moods as $item)
