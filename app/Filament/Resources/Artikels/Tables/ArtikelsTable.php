@@ -18,7 +18,7 @@ class ArtikelsTable
             ->columns([
                 ImageColumn::make('thumbnail')
                     ->label('Thumbnail')
-                    ->disk('public')
+                    ->disk('foto')
                     ->square(),
                 TextColumn::make('judul')
                     ->label('Judul')

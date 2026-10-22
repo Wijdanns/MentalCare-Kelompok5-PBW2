@@ -1,58 +1,209 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MentalCare 🧠💚
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**MentalCare** adalah aplikasi web platform kesehatan mental berbasis Laravel yang dirancang untuk memudahkan masyarakat dalam melakukan tes psikologis mandiri, membaca artikel edukasi kesehatan mental, serta melakukan pemesanan jadwal konsultasi dengan psikolog profesional.
 
-## About Laravel
+Proyek tugas akhir mata kuliah **Pemrograman Website 2**.
+**Politeknik Negeri Madiun**, Program Studi **Teknologi Rekayasa Perangkat Lunak**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📌 Daftar Isi
+1. [Latar Belakang dan Tujuan](#-latar-belakang-dan-tujuan)
+2. [Fitur Utama](#-fitur-utama)
+3. [Teknologi yang Digunakan](#-teknologi-yang-digunakan)
+4. [Arsitektur & Struktur Folder](#-arsitektur--struktur-folder)
+5. [Panduan Instalasi Lokal](#-panduan-instalasi-lokal)
+6. [Akun Demo](#-akun-demo)
+7. [Peta Halaman (Routes)](#-peta-halaman-routes)
+8. [Skema Basis Data](#-skema-basis-data)
+9. [Keamanan & Validasi](#-keamanan--validasi)
+10. [Pengujian](#-pengujian)
+11. [Pemecahan Masalah (FAQ)](#-pemecahan-masalah-faq)
+12. [Tim](#-tim)
+13. [Lisensi](#-lisensi)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🎯 Latar Belakang dan Tujuan
+Kesadaran akan kesehatan mental kian meningkat, tetapi akses konsultasi dan deteksi dini terjangkau masih terbatas. **MentalCare** dirancang sebagai platform digital terpadu untuk membantu masyarakat melakukan deteksi dini lewat kuis tes psikologis mandiri, mengakses edukasi tepercaya, dan menjadwalkan konsultasi dengan psikolog secara praktis.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## ✨ Fitur Utama
 
-## Agentic Development
+### 👤 Pengguna / Pasien
+- **Autentikasi & Profil**: Registrasi, login, logout, dan manajemen profil akun.
+- **Edukasi & Artikel**: Membaca artikel kesehatan mental dengan pencarian dan filter kategori.
+- **Katalog Psikolog**: Mencari psikolog berdasarkan spesialisasi (*Anxiety*, *Burnout*, *Trauma*, dll.), kategori, dan biaya.
+- **Pemesanan Konsultasi**: Memilih jadwal konsultasi, metode (Online/Offline), dan konfirmasi pembayaran.
+- **Tes Psikologis Mandiri**: Menjawab rangkaian pertanyaan kuis untuk menghitung skor kondisi mental secara otomatis.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 🛠️ Administrator
+- **Dashboard Ringkasan**: Statistik pengguna, psikolog, serta transaksi konsultasi.
+- **Kelola Data Psikolog (CRUD)**: Mengolah profil, spesialisasi, foto, biaya, dan jadwal psikolog.
+- **Kelola Tes & Pertanyaan**: Membuat instrumen tes psikologi beserta opsi jawaban dan bobot poin.
+- **Kelola Artikel & Kategori**: Manajemen artikel edukasi dan kategori pembahasan.
+- **Manajemen Pembayaran**: Verifikasi status pembayaran transaksi konsultasi pasien.
 
-```bash
-composer require laravel/boost --dev
+---
 
-php artisan boost:install
+## 🛠️ Teknologi yang Digunakan
+
+| Lapisan | Teknologi |
+| :--- | :--- |
+| **Backend** | PHP 8.4, Laravel 12 (Monolith / Blade) |
+| **Autentikasi** | Laravel Breeze (Blade) |
+| **Frontend** | Blade, Tailwind CSS, Alpine.js (Vite) |
+| **Basis Data** | MySQL 8 |
+| **Pengujian** | Pest / PHPUnit |
+
+---
+
+## 📂 Arsitektur & Struktur Folder
+
+```text
+app/
+  Http/Controllers/        Controller publik, pasien, dan Autentikasi
+  Http/Controllers/Admin/  Controller khusus panel Admin
+  Models/                  Model Eloquent (User, Psikolog, Konsultasi, Artikel, dll.)
+database/
+  migrations/              Skema migrasi tabel basis data
+  seeders/                 Data sampel/riil awal
+resources/views/           Tampilan Blade (Auth, Pasien, Admin, Layouts)
+routes/
+  web.php                  Seluruh rute aplikasi (Publik, Pasien, & Admin)
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 🚀 Panduan Instalasi Lokal
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Prasyarat
+- PHP >= 8.3 / 8.4
+- Composer 2.x
+- Node.js & NPM
+- MySQL Database
 
-## Code of Conduct
+### Langkah Instalasi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. **Klon Repositori**
+   ```bash
+   git clone https://github.com/Wijdanns/MentalCare-Kelompok5-PBW2
+   cd mentalcare
+   ```
 
-## Security Vulnerabilities
+2. **Install Dependensi PHP & Node**
+   ```bash
+   composer install
+   npm install
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. **Salin & Konfigurasi Berkas `.env`**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   Atur koneksi basis data pada berkas `.env`:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=pjbl-web2-mentalhealth
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
 
-## License
+4. **Jalankan Migrasi & Seeder**
+   ```bash
+   php artisan migrate:fresh --seed
+   php artisan storage:link
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. **Jalankan Server Pengujian**
+   Buka terminal terpisah:
+   ```bash
+
+   # Terminal  (Laravel)
+   php artisan serve
+   ```
+   Akses aplikasi di peramban via `http://127.0.0.1:8000`.
+
+---
+
+## 🔐 Akun Demo
+
+| Peran | Email | Kata Sandi | Akses |
+| --- | --- | --- | --- |
+| **Admin** | `admin@gmail.com` | `admin123` | Panel Pengelola Sistem |
+| **Pasien** | `test@example.com` | `password` | Layanan Pasien & Tes |
+
+---
+
+## 🗺️ Peta Halaman (Routes)
+
+| Route | Hak Akses | Keterangan |
+| --- | --- | --- |
+| `/` | Publik | Beranda utama & Informasi platform |
+| `/psikolog` | Publik | Katalog daftar psikolog |
+| `/psikolog/{id}` | Publik | Detail profil & jadwal psikolog |
+| `/artikel` | Publik | Daftar artikel kesehatan mental |
+| `/tes-psikologis` | Pasien (Login) | Pelaksanaan tes kesehatan mental |
+| `/konsultasi` | Pasien (Login) | Pendaftaran jadwal & riwayat konsultasi |
+| `/admin/*` | Admin | Panel khusus admin |
+
+---
+
+## 🗄️ Skema Basis Data
+
+Aplikasi menggunakan 12 tabel utama:
+
+1. `users` — Data akun pasien dan admin
+2. `psikolog` — Profil, bidang spesialis, kategori, dan biaya psikolog
+3. `jadwal_psikolog` — Ketersediaan jadwal praktek psikolog
+4. `konsultasi` — Transaksi pendaftaran konsultasi pasien
+5. `pembayaran` — Status dan metode pembayaran transaksi
+6. `tes_psikologis` — Master instrumen kuis tes
+7. `pertanyaan_psikologis` — Daftar pertanyaan per modul tes
+8. `jawaban_psikologis` — Opsi pilihan jawaban & bobot poin
+9. `hasil_tes` — Total poin tes akhir milik pengguna
+10. `jawaban_user` — Detail riwayat jawaban pengguna per sesi tes
+11. `artikel` & `kategori_artikel` — Manajemen materi edukasi
+12. `jawaban_psikologis` — Detail jawaban dan poin
+13. `sessions`, `cache`, `jobs` — Tabel pendukung bawaan sistem
+
+---
+
+## 🛡️ Keamanan & Validasi
+
+- **Otorisasi**: Pembatasan akses halaman sensitif menggunakan Middleware Role.
+- **Integritas Jawaban**: Penerapan `unique constraint` pada tabel `jawaban_user` agar pertanyaan tidak dapat dijawab berulang kali dalam satu sesi.
+- **Validasi Input**: Validasi ketat di sisi server untuk pengunggahan berkas dan pendaftaran konsultasi.
+
+---
+
+## 🧪 Pengujian
+
+Untuk menjalankan unit test automatisasi pada aplikasi:
+
+```bash
+php artisan test
+```
+
+
+---
+
+## 👥 Tim
+
+| Nama | NIM | Peran |
+| --- | --- | --- |
+| **Indah Ayu Astuti** | 254311002 | Frontend Developer |
+| **Sekar Purwita Asri** | 254311008 | Backend Developer |
+| **Lutfilah Ahmad** | 254311020 | Backend Developer |
+| **Wijdan Hesa Fausta** | 254311030 | Frontend Developer |
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dikembangkan khusus untuk tugas akademik mata kuliah di **Politeknik Negeri Madiun**.

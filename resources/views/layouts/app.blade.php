@@ -49,6 +49,8 @@
         @yield('content')
     </main>
 
+    @include('partials.toggle-wa')
+
     @include('partials.footer')
 
     @stack('scripts')

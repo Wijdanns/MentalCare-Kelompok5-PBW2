@@ -56,7 +56,6 @@
 
         <div class="mt-auto">
             <div class="mt-6 flex items-center justify-between gap-3 border-t border-gray-100 pt-4 text-sm">
-                <span class="text-gray-500">{{ $psikolog->pengalaman_tahun }} tahun pengalaman</span>
                 <span class="font-bold text-primary">Rp{{ number_format($psikolog->tarif, 0, ',', '.') }}</span>
             </div>
 
