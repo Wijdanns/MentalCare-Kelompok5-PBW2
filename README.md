@@ -36,7 +36,7 @@ Kesadaran akan kesehatan mental kian meningkat, tetapi akses konsultasi dan dete
 - **Autentikasi & Profil**: Registrasi, login, logout, dan manajemen profil akun.
 - **Edukasi & Artikel**: Membaca artikel kesehatan mental dengan pencarian dan filter kategori.
 - **Katalog Psikolog**: Mencari psikolog berdasarkan spesialisasi (*Anxiety*, *Burnout*, *Trauma*, dll.), kategori, dan biaya.
-- **Pemesanan Konsultasi**: Memilih jadwal konsultasi, metode (Online/Offline), dan konfirmasi pembayaran.
+- **Pemesanan Konsultasi**: Memilih jadwal konsultasi, dan konfirmasi pembayaran.
 - **Tes Psikologis Mandiri**: Menjawab rangkaian pertanyaan kuis untuk menghitung skor kondisi mental secara otomatis.
 
 ### 🛠️ Administrator

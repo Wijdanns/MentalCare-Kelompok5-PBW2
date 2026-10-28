@@ -10,7 +10,7 @@ class Konsultasi extends Model
 
     protected $fillable = [
         'id_user', 'id_psikolog', 'id_jadwal',
-        'metode', 'status_konsultasi', 'total_biaya',
+        'status_konsultasi', 'total_biaya',
     ];
 
     protected static function booted(): void

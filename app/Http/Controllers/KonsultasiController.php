@@ -32,14 +32,25 @@ class KonsultasiController extends Controller
         $data = $request->validate([
             'id_psikolog'       => ['required', 'exists:psikolog,id'],
             'id_jadwal'         => ['required', 'exists:jadwal_psikolog,id'],
-            'metode'            => ['nullable', 'in:Online,Offline'],
             'nama'              => ['required', 'string', 'max:255'],
             'alamat'            => ['nullable', 'string'],
             'email'             => ['required', 'email'],
             'jenis_kelamin'     => ['nullable', 'in:Laki-laki,Perempuan'],
             'usia'              => ['nullable', 'integer', 'min:1', 'max:150'],
             'metode_pembayaran' => ['required', 'in:Transfer Bank,E-Wallet'],
+        ], [
+            'id_psikolog.required' => 'Pilih psikolog terlebih dahulu.',
+            'id_psikolog.exists'   => 'Psikolog yang dipilih tidak valid.',
+            'id_jadwal.required'   => 'Pilih jadwal konsultasi terlebih dahulu.',
+            'id_jadwal.exists'     => 'Jadwal yang dipilih tidak valid.',
+            'nama.required'        => 'Nama wajib diisi.',
+            'nama.max'             => 'Nama maksimal 255 karakter.',
+            'email.required'       => 'Email wajib diisi.',
+            'email.email'          => 'Format email tidak valid.',
+            'metode_pembayaran.required' => 'Pilih metode pembayaran terlebih dahulu.',
+            'metode_pembayaran.in'       => 'Metode pembayaran tidak valid.',
         ]);
+
 
         $psikolog = Psikolog::findOrFail($data['id_psikolog']);
 
