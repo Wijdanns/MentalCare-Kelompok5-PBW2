@@ -23,11 +23,24 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+        ],
+        [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
+        // Email tidak terdaftar -> error di kolom email
+        if (! User::where('email', $credentials['email'])->exists()) {
+            return back()
+                ->withErrors(['email' => 'Email salah.'])
+                ->onlyInput('email');
+        }
+
+        // Email ada, password salah -> error di kolom password
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
-                ->withErrors(['email' => 'Email atau kata sandi salah.'])
+                ->withErrors(['password' => 'Kata sandi salah.'])
                 ->onlyInput('email');
         }
 
