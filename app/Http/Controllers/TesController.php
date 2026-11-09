@@ -103,6 +103,8 @@ class TesController extends Controller
             return $hasil;
         });
 
+        toast('Selesai! Terima kasih sudah melangkah maju untuk mengenal dirimu lebih baik.', 'success');
+
         return redirect()->route('tes.hasil', $hasil);
     }
 

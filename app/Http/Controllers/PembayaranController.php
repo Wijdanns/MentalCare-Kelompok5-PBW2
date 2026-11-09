@@ -33,6 +33,8 @@ class PembayaranController extends Controller
             ]);
         });
 
+        toast('Konfirmasi pembayaran berhasil! Sesi konselingmu siap dijalankan.', 'success');
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success'  => true,
@@ -54,6 +56,8 @@ class PembayaranController extends Controller
 
         $pembayaran = Pembayaran::where('id_konsultasi', $konsultasi->id)->firstOrFail();
         $pembayaran->update(['status_pembayaran' => 'Gagal']);
+
+        toast('Pembayaran gagal dikonfirmasi. Yuk, periksa kembali transaksimu dan coba lagi.', 'error');
 
         return back()->with('error', 'Pembayaran ditandai gagal.');
     }

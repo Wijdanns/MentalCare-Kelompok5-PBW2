@@ -80,6 +80,8 @@ class KonsultasiController extends Controller
             return $konsultasi;
         });
 
+        toast('Pemesanan berhasil! Silakan selesaikan pembayaran agar sesi konselingmu bisa segera dikonfirmasi.', 'success');
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success'  => true,

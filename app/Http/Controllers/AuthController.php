@@ -46,6 +46,8 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        toast('Berhasil masuk! Mari lanjutkan langkah kecil untuk kesehatan mentalmu hari ini.', 'success');
+
         // JANGAN forget url.intended di sini — biar pasien kembali ke halaman sebelumnya.
         return $this->redirectByRole();
     }
@@ -77,6 +79,8 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
+        toast('Pendaftaran berhasil! Langkah awal yang baik untuk perjalanan kesehatan mentalmu.', 'success');
+
         return $this->redirectByRole();
     }
 
@@ -86,6 +90,8 @@ class AuthController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        toast('Sesi diakhiri. Sampai jumpa lagi, semoga harimu menyenangkan!', 'info');
 
         return redirect()->route('home')->with('success', 'Kamu sudah keluar.');
     }
