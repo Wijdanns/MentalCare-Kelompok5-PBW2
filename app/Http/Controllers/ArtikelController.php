@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Artikel;
 use App\Models\KategoriArtikel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ArtikelController extends Controller
@@ -50,8 +52,7 @@ class ArtikelController extends Controller
      */
     public function show(Artikel $artikel): View
     {
-        // Artikel yang belum waktunya terbit dianggap tidak ada
-        abort_if($artikel->tanggal_publikasi->isFuture() && ! $artikel->tanggal_publikasi->isToday(), 404);
+        $this->pastikanSudahTerbit($artikel);
 
         $artikel->load(['kategori', 'user']);
 
@@ -65,5 +66,40 @@ class ArtikelController extends Controller
             ->get();
 
         return view('artikel.show', compact('artikel', 'terkait'));
+    }
+
+    /**
+     * Unduh satu artikel sebagai file PDF (DomPDF).
+     */
+    public function unduh(Artikel $artikel)
+    {
+        $this->pastikanSudahTerbit($artikel);
+
+        $artikel->load(['kategori', 'user']);
+
+        // Thumbnail disisipkan sebagai data base64 supaya pasti tampil di PDF
+        $thumbnail = null;
+        if ($artikel->thumbnail) {
+            $path = storage_path('app/public/artikel/' . basename($artikel->thumbnail));
+
+            if (is_file($path)) {
+                $thumbnail = 'data:' . mime_content_type($path) . ';base64,' . base64_encode(file_get_contents($path));
+            }
+        }
+
+        $pdf = Pdf::loadView('artikel.pdf', compact('artikel', 'thumbnail'))
+            ->setPaper('a4', 'portrait');
+
+        $namaFile = (Str::slug($artikel->judul) ?: 'artikel') . '.pdf';
+
+        return $pdf->download($namaFile);
+    }
+
+    /**
+     * Artikel yang belum waktunya terbit dianggap tidak ada (dipakai show() dan unduh()).
+     */
+    private function pastikanSudahTerbit(Artikel $artikel): void
+    {
+        abort_if($artikel->tanggal_publikasi->isFuture() && ! $artikel->tanggal_publikasi->isToday(), 404);
     }
 }

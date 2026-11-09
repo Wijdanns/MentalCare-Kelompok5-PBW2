@@ -44,6 +44,7 @@ Route::get('/foto-psikolog/artikel/{file}', function (string $file) {
 
 Route::get('/artikel', [ArtikelController::class, 'index'])->name('artikel.index');
 Route::get('/artikel/{artikel}', [ArtikelController::class, 'show'])->name('artikel.show');
+Route::get('/artikel/{artikel}/unduh', [ArtikelController::class, 'unduh'])->name('artikel.unduh');
 
 Route::get('/tes-psikologi', [TesController::class, 'index'])->name('tes.index');
 
