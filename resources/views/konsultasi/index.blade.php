@@ -429,7 +429,7 @@
         </div>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a href="{{ route('pasien.dashboard') }}"
+          <a href="{{ route('home') }}"
              class="w-full sm:w-auto bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition text-center">
             Ke Dashboard
           </a>

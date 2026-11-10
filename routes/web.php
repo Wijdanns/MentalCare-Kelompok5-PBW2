@@ -57,7 +57,6 @@ Route::get('/konsultasi/go-login', function () {
 
 // ---------- Area pasien (wajib login) ----------
 Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
-    Route::view('/dashboard', 'pasien.dashboard')->name('pasien.dashboard');
 
     Route::prefix('tes-psikologi')->name('tes.')->group(function () {
         // riwayat & hasil harus di atas /{tes}, kalau tidak "riwayat" dianggap ID tes

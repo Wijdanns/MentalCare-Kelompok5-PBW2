@@ -111,11 +111,11 @@ class AuthController extends Controller
         $path = $intended ? parse_url($intended, PHP_URL_PATH) : null;
 
         if ($path && ! str_starts_with($path, '/admin')) {
-            return redirect()->intended(route('pasien.dashboard'));
+            return redirect()->intended(route('home'));
         }
 
         session()->forget('url.intended');
 
-        return redirect()->route('pasien.dashboard');
+        return redirect()->route('home');
     }
 }

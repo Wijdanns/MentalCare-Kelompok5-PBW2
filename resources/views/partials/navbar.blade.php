@@ -76,7 +76,7 @@
                                 @if ($isAdmin)
                                     <a href="{{ url('/admin') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Panel Admin</a>
                                 @else
-                                    <a href="{{ route('pasien.dashboard') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Akun saya</a>
+                                    <a href="{{ route('home') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Akun saya</a>
                                     {{-- tambah "Riwayat Konsultasi" dan "Hasil Tes" kalau halamannya sudah ada --}}
                                 @endif
 
@@ -144,7 +144,7 @@
                         </div>
                     </div>
 
-                    <a href="{{ $user->role === 'admin' ? url('/admin') : route('pasien.dashboard') }}"
+                    <a href="{{ $user->role === 'admin' ? url('/admin') : route('home') }}"
                     class="block rounded-lg px-3 py-2.5 text-gray-700 hover:bg-blush-100">
                         {{ $user->role === 'admin' ? 'Panel Admin' : 'Akun saya' }}
                     </a>
