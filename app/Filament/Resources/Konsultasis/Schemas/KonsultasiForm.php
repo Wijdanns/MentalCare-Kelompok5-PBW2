@@ -29,10 +29,6 @@ class KonsultasiForm
                 ->formatStateUsing(fn ($state) => $state ? substr($state, 0, 5) : null)
                 ->disabled(),
 
-            TextInput::make('metode')
-                ->label('Metode')
-                ->disabled(),
-
             TextInput::make('total_biaya')
                 ->label('Total Biaya')
                 ->prefix('Rp')

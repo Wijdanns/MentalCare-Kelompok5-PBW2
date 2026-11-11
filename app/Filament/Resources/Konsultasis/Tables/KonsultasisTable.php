@@ -30,10 +30,6 @@ class KonsultasisTable
                 TextColumn::make('jadwal.jam_mulai')
                     ->label('Jam')
                     ->time('H:i'),
-                TextColumn::make('metode')
-                    ->label('Metode')
-                    ->badge()
-                    ->color(fn (string $state): string => $state === 'Online' ? 'info' : 'gray'),
                 TextColumn::make('status_konsultasi')
                     ->label('Status')
                     ->badge()

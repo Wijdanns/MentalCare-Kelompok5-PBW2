@@ -55,6 +55,7 @@ Route::get('/konsultasi/go-login', function () {
     session(['url.intended' => route('konsultasi.index')]);
     return redirect()->route('login');
 })->name('konsultasi.go-login');
+Route::get('/konsultasi/export', [KonsultasiController::class, 'exportExcel'])->name('konsultasi.export');
 
 // ---------- Area pasien (wajib login) ----------
 Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {

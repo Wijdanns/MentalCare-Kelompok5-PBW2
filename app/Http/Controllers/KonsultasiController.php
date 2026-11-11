@@ -9,6 +9,8 @@ use App\Models\Psikolog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Exports\KonsultasiExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class KonsultasiController extends Controller
 {
@@ -102,5 +104,14 @@ class KonsultasiController extends Controller
         $konsultasi->load(['psikolog', 'jadwal', 'pembayaran']);
 
         return view('konsultasi.konfirmasi', compact('konsultasi'));
+    }
+
+    // EXPORT: unduh riwayat konsultasi 
+    public function exportExcel()
+    {
+        return Excel::download(
+            new KonsultasiExport,
+            'laporan-konsultasi-' . now()->format('Ymd') . '.xlsx'
+        );
     }
 }
