@@ -23,15 +23,30 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+        ],
+        [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
+        // Email tidak terdaftar -> error di kolom email
+        if (! User::where('email', $credentials['email'])->exists()) {
+            return back()
+                ->withErrors(['email' => 'Email salah.'])
+                ->onlyInput('email');
+        }
+
+        // Email ada, password salah -> error di kolom password
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
-                ->withErrors(['email' => 'Email atau kata sandi salah.'])
+                ->withErrors(['password' => 'Kata sandi salah.'])
                 ->onlyInput('email');
         }
 
         $request->session()->regenerate();
+
+        toast('Berhasil masuk! Mari lanjutkan langkah kecil untuk kesehatan mentalmu hari ini.', 'success');
 
         // JANGAN forget url.intended di sini — biar pasien kembali ke halaman sebelumnya.
         return $this->redirectByRole();
@@ -64,6 +79,8 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
+        toast('Pendaftaran berhasil! Langkah awal yang baik untuk perjalanan kesehatan mentalmu.', 'success');
+
         return $this->redirectByRole();
     }
 
@@ -73,6 +90,8 @@ class AuthController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        toast('Sesi diakhiri. Sampai jumpa lagi, semoga harimu menyenangkan!', 'info');
 
         return redirect()->route('home')->with('success', 'Kamu sudah keluar.');
     }
@@ -92,11 +111,11 @@ class AuthController extends Controller
         $path = $intended ? parse_url($intended, PHP_URL_PATH) : null;
 
         if ($path && ! str_starts_with($path, '/admin')) {
-            return redirect()->intended(route('pasien.dashboard'));
+            return redirect()->intended(route('home'));
         }
 
         session()->forget('url.intended');
 
-        return redirect()->route('pasien.dashboard');
+        return redirect()->route('home');
     }
 }

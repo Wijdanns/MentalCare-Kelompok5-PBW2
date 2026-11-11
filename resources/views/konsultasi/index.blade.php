@@ -31,6 +31,7 @@
     showModal: false,
     loading: false,
     konsultasiId: null,
+    errors: {},
     psikologs: @js($daftarPsikolog),
     jadwal: @js($daftarJadwal),
     formData: {
@@ -40,7 +41,7 @@
       jam_mulai: '', jam_selesai: '',
       nama: '', alamat: '', email: '',
       jenis_kelamin: '', usia: '',
-      metode_pembayaran: 'Transfer Bank'
+      metode_pembayaran: ''
     },
     steps: [
       { num: 1, title: 'Atur jadwal', desc: 'Pilih psikolog, tanggal, dan sesi.' },
@@ -62,6 +63,27 @@
     get jadwalTerpilih() {
       if (! this.formData.psikolog) return [];
       return this.jadwal[this.formData.psikolog] || [];
+    },
+
+    err(field) {
+      return this.errors[field] ? this.errors[field][0] : '';
+    },
+
+    clearError(field) {
+      if (this.errors[field]) delete this.errors[field];
+    },
+
+    lanjutKeStep2() {
+      this.errors = {};
+      if (! this.formData.psikolog) {
+        this.errors.id_psikolog = ['Pilih psikolog terlebih dahulu.'];
+      }
+      if (! this.formData.id_jadwal) {
+        this.errors.id_jadwal = ['Pilih jadwal konsultasi terlebih dahulu.'];
+      }
+      if (Object.keys(this.errors).length === 0) {
+        this.step = 2;
+      }
     },
 
     pilihSesi(id) {
@@ -93,6 +115,8 @@
     async submitKonsultasi() {
       if (this.loading) return;
       this.loading = true;
+      this.errors = {};
+
       try {
         const res = await fetch('{{ route('konsultasi.store') }}', {
           method: 'POST',
@@ -119,14 +143,18 @@
           this.konsultasiId = json.id;
           this.showModal = false;
           this.step = 3;
+        } else if (res.status === 422) {
+          // Error validasi dari controller
+          this.errors = json.errors || {};
+          this.showModal = false;
+          this.step = (this.errors.id_psikolog || this.errors.id_jadwal ) ? 1 : 2;
         } else {
-          const msg = json.message
-            || Object.values(json.errors || {}).flat().join('\n')
-            || 'Gagal menyimpan konsultasi.';
-          alert(msg);
+          this.showModal = false;
+          this.errors = { umum: [json.message || 'Gagal menyimpan konsultasi.'] };
         }
       } catch (e) {
-        alert('Terjadi kesalahan: ' + e.message);
+        this.showModal = false;
+        this.errors = { umum: ['Terjadi kesalahan: ' + e.message] };
       } finally {
         this.loading = false;
       }
@@ -134,6 +162,8 @@
 
     async konfirmasiPembayaran() {
       if (! this.konsultasiId) { this.step = 4; return; }
+
+      this.errors = {};
 
       try {
         const res = await fetch(`/konsultasi/${this.konsultasiId}/pembayaran/konfirmasi`, {
@@ -147,10 +177,10 @@
         if (res.ok) {
           this.step = 4;
         } else {
-          alert('Gagal konfirmasi pembayaran.');
+          this.errors = { umum: ['Gagal konfirmasi pembayaran.'] };
         }
       } catch (e) {
-        alert('Terjadi kesalahan: ' + e.message);
+        this.errors = { umum: ['Terjadi kesalahan: ' + e.message] };
       }
     }
   }" class="w-full">
@@ -196,6 +226,10 @@
     <!-- RIGHT FORM CARD -->
     <div class="md:col-span-8 bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm relative">
 
+      <!-- ERROR UMUM -->
+      <div x-show="err('umum')" x-text="err('umum')" style="display: none;"
+           class="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600"></div>
+
       <!-- LANGKAH 1: ATUR JADWAL -->
       <div x-show="step === 1" class="space-y-4">
         <div class="flex justify-between items-start mb-2">
@@ -209,8 +243,9 @@
         <div>
           <label class="block text-xs font-bold text-gray-800 mb-1">Pilih psikolog</label>
           <select x-model="formData.psikolog"
-                  @change="formData.id_jadwal = ''; formData.jam_mulai = ''; formData.jam_selesai = ''"
-                  class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white">
+                  @change="formData.id_jadwal = ''; formData.jam_mulai = ''; formData.jam_selesai = ''; clearError('id_psikolog'); clearError('id_jadwal')"
+                  :class="err('id_psikolog') ? 'border-red-400' : 'border-gray-200'"
+                  class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white">
             <option value="">Pilih psikolog</option>
             @foreach ($psikologs as $psikolog)
               <option value="{{ $psikolog->id }}" {{ $psikolog->tersedia ? '' : 'disabled' }}>
@@ -218,6 +253,7 @@
               </option>
             @endforeach
           </select>
+          <p x-show="err('id_psikolog')" x-text="err('id_psikolog')" class="mt-1 text-xs text-red-500" style="display: none;"></p>
           @if ($psikologs->isEmpty())
             <p class="mt-1 text-xs text-gray-400">Belum ada psikolog yang tersedia.</p>
           @endif
@@ -225,9 +261,10 @@
 
         <div>
           <label class="block text-xs font-bold text-gray-800 mb-1">Pilih sesi pertemuan</label>
-          <select x-model="formData.id_jadwal" @change="pilihSesi($event.target.value)"
+          <select x-model="formData.id_jadwal" @change="pilihSesi($event.target.value); clearError('id_jadwal')"
                   :disabled="!formData.psikolog"
-                  class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white disabled:bg-gray-100">
+                  :class="err('id_jadwal') ? 'border-red-400' : 'border-gray-200'"
+                  class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white disabled:bg-gray-100">
             <option value="">Pilih sesi pertemuan</option>
             <template x-for="j in jadwalTerpilih" :key="j.id">
               <option :value="j.id"
@@ -235,7 +272,8 @@
               </option>
             </template>
           </select>
-          <p x-show="!formData.psikolog" class="mt-1 text-xs text-gray-400">Pilih psikolog dulu.</p>
+          <p x-show="err('id_jadwal')" x-text="err('id_jadwal')" class="mt-1 text-xs text-red-500" style="display: none;"></p>
+          <p x-show="!formData.psikolog && !err('id_jadwal')" class="mt-1 text-xs text-gray-400">Pilih psikolog dulu.</p>
           <p x-show="formData.psikolog && jadwalTerpilih.length === 0" class="mt-1 text-xs text-gray-400">Belum ada jadwal sesi yang tersedia.</p>
         </div>
 
@@ -245,11 +283,7 @@
                 return;
             @endguest
 
-            if (!formData.psikolog || !formData.id_jadwal) {
-                alert('Pilih psikolog dan sesi dulu.');
-            } else {
-                step = 2;
-            }"
+            lanjutKeStep2()"
             class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition mt-4">
           Lanjutkan pemesanan <span>→</span>
         </button>
@@ -267,26 +301,31 @@
 
         <div>
           <label class="block text-xs font-bold text-gray-800 mb-1">Nama lengkap</label>
-          <input type="text" x-model="formData.nama" placeholder="Masukkan nama lengkap"
-                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose-500">
+          <input type="text" x-model="formData.nama" @input="clearError('nama')" placeholder="Masukkan nama lengkap"
+                 :class="err('nama') ? 'border-red-400' : 'border-gray-200'"
+                 class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500">
+          <p x-show="err('nama')" x-text="err('nama')" class="mt-1 text-xs text-red-500" style="display: none;"></p>
         </div>
 
         <div>
           <label class="block text-xs font-bold text-gray-800 mb-1">Alamat</label>
           <textarea x-model="formData.alamat" rows="2" placeholder="Masukkan alamat lengkap"
-                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose-500"></textarea>
+                    class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500"></textarea>
         </div>
 
         <div>
           <label class="block text-xs font-bold text-gray-800 mb-1">Email</label>
-          <input type="email" x-model="formData.email" placeholder="nama@email.com"
-                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose-500">
+          <input type="email" x-model="formData.email" @input="clearError('email')" placeholder="nama@email.com"
+                 :class="err('email') ? 'border-red-400' : 'border-gray-200'"
+                 class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500">
+          <p x-show="err('email')" x-text="err('email')" class="mt-1 text-xs text-red-500" style="display: none;"></p>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold text-gray-800 mb-1">Jenis kelamin</label>
-            <select x-model="formData.jenis_kelamin" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white">
+            <select x-model="formData.jenis_kelamin"
+                    class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white">
               <option value="">Pilih jenis kelamin</option>
               <option value="Laki-laki">Laki-laki</option>
               <option value="Perempuan">Perempuan</option>
@@ -294,22 +333,26 @@
           </div>
           <div>
             <label class="block text-xs font-bold text-gray-800 mb-1">Usia</label>
-            <input type="number" x-model="formData.usia" placeholder="Contoh: 24"
-                   class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose-500">
+            <input type="number" x-model="formData.usia"  placeholder="Contoh: 24"
+                   class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500">
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-bold text-gray-800 mb-1">Metode pembayaran</label>
-          <select x-model="formData.metode_pembayaran" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white">
+          <select x-model="formData.metode_pembayaran" @change="clearError('metode_pembayaran')"
+                  :class="err('metode_pembayaran') ? 'border-red-400' : 'border-gray-200'"
+                  class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white">
+            <option value="">Pilih metode pembayaran</option>
             <option value="Transfer Bank">Transfer Bank</option>
             <option value="E-Wallet">QRIS</option>
           </select>
+          <p x-show="err('metode_pembayaran')" x-text="err('metode_pembayaran')" class="mt-1 text-xs text-red-500" style="display: none;"></p>
         </div>
 
         <div class="flex items-center gap-3 pt-2">
           <button @click="step = 1" class="w-1/2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold py-2.5 rounded-lg text-sm transition">Kembali</button>
-          <button @click="if (!formData.nama || !formData.email) { alert('Nama dan email wajib diisi.'); } else { showModal = true }"
+          <button @click="showModal = true"
                   class="w-1/2 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition">
             Konfirmasi Pesanan <span>→</span>
           </button>
@@ -342,7 +385,7 @@
             </div>
           </template>
 
-          <template x-if="formData.metode_pembayaran === 'E-Wallet'">
+          <template x-if="formData.metode_pembayaran === 'QRIS'">
             <div class="bg-white p-3 rounded-lg border border-gray-200 space-y-2 text-center">
               <p class="text-xs text-gray-500 font-semibold">QRIS:</p>
               <div class="w-32 h-32 bg-gray-200 mx-auto rounded-lg flex items-center justify-center text-xs text-gray-500">
@@ -385,14 +428,14 @@
           </div>
         </div>
 
-        @if(session('success'))
+@if(session('success'))
           <div class="p-3 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg">
             {{ session('success') }}
           </div>
         @endif
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-          <a href="{{ route('pasien.dashboard') }}"
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a href="{{ route('home') }}"
              class="w-full sm:w-auto bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition text-center">
             Ke Dashboard
           </a>

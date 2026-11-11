@@ -14,30 +14,35 @@
     <h2 class="text-2xl font-bold text-gray-900 mb-1">Selamat datang kembali</h2>
     <p class="text-gray-500 text-sm mb-6">Masuk untuk melanjutkan perawatan dirimu.</p>
 
-    <!-- Notifikasi Error/Success (Opsional biar kelihatan kalau gagal/berhasil) -->
+    <!-- Notifikasi Success -->
     @if(session('success'))
       <div class="mb-4 text-xs text-green-600 bg-green-50 p-2 rounded">
         {{ session('success') }}
       </div>
     @endif
 
-    <!-- Form -->
-    <form action="{{ route('login') }}" method="POST" class="space-y-4">
+    <!-- Form (novalidate: matikan popup bawaan browser, validasi pakai Laravel) -->
+    <form action="{{ route('login') }}" method="POST" class="space-y-4" novalidate>
       @csrf
 
       <!-- Input Email -->
       <div>
         <label class="block text-sm font-semibold text-gray-800 mb-1">Email</label>
-        <input type="email" name="email" value="{{ old('email') }}" placeholder="nama@email.com" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-pink-500" required>
+        <input type="email" name="email" value="{{ old('email') }}" placeholder="nama@email.com"
+          class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-pink-500 {{ $errors->has('email') ? 'border-red-500' : 'border-gray-200' }}">
         @error('email')
-          <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+          <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
         @enderror
       </div>
 
       <!-- Input Password -->
       <div>
         <label class="block text-sm font-semibold text-gray-800 mb-1">Kata sandi</label>
-        <input type="password" name="password" placeholder="Minimal 8 karakter" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-pink-500" required>
+        <input type="password" name="password" placeholder="Minimal 8 karakter"
+          class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-pink-500 {{ $errors->has('password') ? 'border-red-500' : 'border-gray-200' }}">
+        @error('password')
+          <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+        @enderror
       </div>
 
       <!-- Tombol Masuk -->

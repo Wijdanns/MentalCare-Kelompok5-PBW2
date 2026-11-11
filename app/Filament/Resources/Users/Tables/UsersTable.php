@@ -56,7 +56,6 @@ class UsersTable
                     ]),
             ])
             ->recordActions([
-                EditAction::make(),
                 DeleteAction::make()
                     // Admin tidak boleh menghapus akunnya sendiri
                     ->hidden(fn (User $record): bool => $record->id === Auth::id()),
