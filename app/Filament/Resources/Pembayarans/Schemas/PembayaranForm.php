@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Pembayarans\Schemas;
 
 use App\Models\Konsultasi;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 
@@ -44,6 +45,16 @@ class PembayaranForm
                 ->label('Waktu Pembayaran')
                 ->seconds(false)
                 ->helperText('Kosongkan: terisi otomatis saat status diubah ke Berhasil.')
+                ->columnSpanFull(),
+
+            FileUpload::make('bukti_pembayaran')
+                ->label('Bukti Pembayaran')
+                ->disk('public')
+                ->directory('bukti_pembayaran')
+                ->acceptedFileTypes(['image/jpeg', 'image/png', 'application/pdf'])
+                ->maxSize(2048)
+                ->openable()
+                ->downloadable()
                 ->columnSpanFull(),
         ])->columns(2);
     }

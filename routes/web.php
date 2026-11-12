@@ -72,7 +72,17 @@ Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {
     Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
     Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
 
+    Route::get('/konsultasi/riwayat', [KonsultasiController::class, 'riwayat'])->name('konsultasi.riwayat');
     Route::post('/konsultasi', [KonsultasiController::class, 'store'])->name('konsultasi.store');
+    Route::post('/konsultasi/{konsultasi}/bayar', [KonsultasiController::class, 'bayar'])->name('konsultasi.bayar');
     Route::get('/konsultasi/konfirmasi/{konsultasi}', [KonsultasiController::class, 'konfirmasi'])->name('konsultasi.konfirmasi');
     Route::post('/konsultasi/{konsultasi}/pembayaran/konfirmasi', [PembayaranController::class, 'konfirmasi'])->name('pembayaran.konfirmasi');
+
+    Route::get('/bukti-pembayaran/{file}', function (string $file) {
+        $path = storage_path('app/public/bukti_pembayaran/' . basename($file));
+
+        abort_unless(is_file($path), 404);
+
+        return response()->file($path);
+    })->middleware('auth')->name('bukti-pembayaran');
 });

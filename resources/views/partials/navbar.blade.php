@@ -76,7 +76,8 @@
                                 @if ($isAdmin)
                                     <a href="{{ url('/admin') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Panel Admin</a>
                                 @else
-                                    <a href="{{ route('profil.index') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Akun saya</a>
+                                <a href="{{ route('profil.index') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Akun saya</a>
+                                <a href="{{  route('konsultasi.riwayat')  }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Riwayat konsultasi</a>
                                 @endif
 
                                 <form action="{{ route('logout') }}" method="POST">

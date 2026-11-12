@@ -9,8 +9,11 @@ class Pembayaran extends Model
     protected $table = 'pembayaran';
 
     protected $fillable = [
-        'id_konsultasi', 'metode_pembayaran',
-        'waktu_pembayaran', 'status_pembayaran',
+        'id_konsultasi',
+        'metode_pembayaran',
+        'waktu_pembayaran',
+        'bukti_pembayaran',
+        'status_pembayaran',
     ];
 
     protected $casts = [
@@ -19,22 +22,23 @@ class Pembayaran extends Model
 
     protected static function booted(): void
     {
-        // Pembayaran berhasil tanpa waktu: isi otomatis dengan waktu sekarang
-        static::saving(function (Pembayaran $pembayaran) {
-            if ($pembayaran->status_pembayaran === 'Berhasil' && ! $pembayaran->waktu_pembayaran) {
-                $pembayaran->waktu_pembayaran = now();
+        static::updating(function (Pembayaran $pembayaran) {
+            if ($pembayaran->isDirty('status_pembayaran') && $pembayaran->status_pembayaran === 'Berhasil') {
+                $pembayaran->waktu_pembayaran ??= now();
             }
         });
 
-        // Pembayaran berhasil: konsultasi yang menunggu jadi Dikonfirmasi
-        static::saved(function (Pembayaran $pembayaran) {
-            if ($pembayaran->status_pembayaran === 'Berhasil') {
-                $pembayaran->konsultasi()
-                    ->where('status_konsultasi', 'Menunggu Pembayaran')
-                    ->update(['status_konsultasi' => 'Dikonfirmasi']);
+        static::updated(function (Pembayaran $pembayaran) {
+            if ($pembayaran->wasChanged('status_pembayaran') && $pembayaran->status_pembayaran === 'Berhasil') {
+                $pembayaran->konsultasi()->update([
+                    'status_konsultasi' => 'Dikonfirmasi',
+                ]);
             }
         });
     }
 
-    public function konsultasi() { return $this->belongsTo(Konsultasi::class, 'id_konsultasi'); }
+    public function konsultasi()
+    {
+        return $this->belongsTo(Konsultasi::class, 'id_konsultasi');
+    }
 }

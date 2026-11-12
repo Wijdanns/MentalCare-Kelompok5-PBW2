@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('id_konsultasi')->constrained('konsultasi')->onDelete('cascade');
             $table->string('metode_pembayaran')->nullable();
             $table->timestamp('waktu_pembayaran')->nullable();
+            $table->string('bukti_pembayaran')->nullable();
             $table->enum('status_pembayaran', ['Pending', 'Berhasil', 'Gagal'])->default('Pending');
             $table->timestamps();
         });

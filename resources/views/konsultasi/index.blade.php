@@ -9,7 +9,7 @@
     $daftarPsikolog = $psikologs->map(fn ($p) => [
         'id'    => (string) $p->id,
         'nama'  => $p->nama,
-        'tarif' => (int) $p->tarif,
+        'biaya' => (int) $p->biaya, // Disamakan dengan $psikolog->biaya di Controller
     ])->values();
 
     $daftarJadwal = $psikologs->mapWithKeys(function ($p) {
@@ -30,7 +30,6 @@
     step: 1,
     showModal: false,
     loading: false,
-    konsultasiId: null,
     errors: {},
     psikologs: @js($daftarPsikolog),
     jadwal: @js($daftarJadwal),
@@ -38,16 +37,14 @@
       psikolog: @js((string) request('psikolog')),
       id_jadwal: '',
       tanggal: @js($hariIni),
-      jam_mulai: '', jam_selesai: '',
-      nama: '', alamat: '', email: '',
-      jenis_kelamin: '', usia: '',
+      jam_mulai: '',
+      jam_selesai: '',
       metode_pembayaran: ''
     },
     steps: [
       { num: 1, title: 'Atur jadwal', desc: 'Pilih psikolog, tanggal, dan sesi.' },
-      { num: 2, title: 'Lengkapi data', desc: 'Masukkan data diri dan metode pembayaran.' },
-      { num: 3, title: 'Pembayaran', desc: 'Selesaikan pembayaran sesuai petunjuk.' },
-      { num: 4, title: 'Selesai', desc: 'Konfirmasi akhir dan jadwal konsultasi.' }
+      { num: 2, title: 'Pembayaran & Konfirmasi', desc: 'Pilih metode pembayaran dan konfirmasi pesanan.' },
+      { num: 3, title: 'Selesaikan Pembayaran', desc: 'Lakukan pembayaran di halaman konfirmasi.' }
     ],
 
     init() {
@@ -84,6 +81,15 @@
       if (Object.keys(this.errors).length === 0) {
         this.step = 2;
       }
+    },
+
+    bukaModalKonfirmasi() {
+      this.errors = {};
+      if (! this.formData.metode_pembayaran) {
+        this.errors.metode_pembayaran = ['Pilih metode pembayaran terlebih dahulu.'];
+        return;
+      }
+      this.showModal = true;
     },
 
     pilihSesi(id) {
@@ -128,11 +134,6 @@
           body: JSON.stringify({
             id_psikolog:       this.formData.psikolog,
             id_jadwal:         this.formData.id_jadwal,
-            nama:              this.formData.nama,
-            alamat:            this.formData.alamat,
-            email:             this.formData.email,
-            jenis_kelamin:     this.formData.jenis_kelamin,
-            usia:              this.formData.usia,
             metode_pembayaran: this.formData.metode_pembayaran,
           }),
         });
@@ -140,14 +141,12 @@
         const json = await res.json();
 
         if (res.ok && json.success) {
-          this.konsultasiId = json.id;
-          this.showModal = false;
-          this.step = 3;
+          // Redirect sesuai respons JSON dari KonsultasiController@store
+          window.location.href = json.redirect;
         } else if (res.status === 422) {
-          // Error validasi dari controller
           this.errors = json.errors || {};
           this.showModal = false;
-          this.step = (this.errors.id_psikolog || this.errors.id_jadwal ) ? 1 : 2;
+          this.step = (this.errors.id_psikolog || this.errors.id_jadwal) ? 1 : 2;
         } else {
           this.showModal = false;
           this.errors = { umum: [json.message || 'Gagal menyimpan konsultasi.'] };
@@ -157,30 +156,6 @@
         this.errors = { umum: ['Terjadi kesalahan: ' + e.message] };
       } finally {
         this.loading = false;
-      }
-    },
-
-    async konfirmasiPembayaran() {
-      if (! this.konsultasiId) { this.step = 4; return; }
-
-      this.errors = {};
-
-      try {
-        const res = await fetch(`/konsultasi/${this.konsultasiId}/pembayaran/konfirmasi`, {
-          method: 'POST',
-          headers: {
-            'Accept':       'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-          },
-        });
-
-        if (res.ok) {
-          this.step = 4;
-        } else {
-          this.errors = { umum: ['Gagal konfirmasi pembayaran.'] };
-        }
-      } catch (e) {
-        this.errors = { umum: ['Terjadi kesalahan: ' + e.message] };
       }
     }
   }" class="w-full">
@@ -249,7 +224,7 @@
             <option value="">Pilih psikolog</option>
             @foreach ($psikologs as $psikolog)
               <option value="{{ $psikolog->id }}" {{ $psikolog->tersedia ? '' : 'disabled' }}>
-                {{ $psikolog->nama }}{{ $psikolog->tersedia ? '' : ' (belum tersedia)' }}
+                {{ $psikolog->nama }} - Rp {{ number_format($psikolog->biaya, 0, ',', '.') }}{{ $psikolog->tersedia ? '' : ' (belum tersedia)' }}
               </option>
             @endforeach
           </select>
@@ -289,54 +264,29 @@
         </button>
       </div>
 
-      <!-- LANGKAH 2: LENGKAPI DATA -->
+      <!-- LANGKAH 2: METODE PEMBAYARAN & RINGKASAN -->
       <div x-show="step === 2" class="space-y-4" style="display: none;">
         <div class="flex justify-between items-start mb-2">
           <div>
             <p class="text-xs font-bold text-rose-600 uppercase">LANGKAH 2 DARI 2</p>
-            <h3 class="text-xl font-bold text-gray-900">Lengkapi data pemesan</h3>
+            <h3 class="text-xl font-bold text-gray-900">Metode pembayaran</h3>
           </div>
-          <div class="w-9 h-9 bg-pink-100 text-rose-600 rounded-lg flex items-center justify-center">👤</div>
+          <div class="w-9 h-9 bg-pink-100 text-rose-600 rounded-lg flex items-center justify-center">💳</div>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-gray-800 mb-1">Nama lengkap</label>
-          <input type="text" x-model="formData.nama" @input="clearError('nama')" placeholder="Masukkan nama lengkap"
-                 :class="err('nama') ? 'border-red-400' : 'border-gray-200'"
-                 class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500">
-          <p x-show="err('nama')" x-text="err('nama')" class="mt-1 text-xs text-red-500" style="display: none;"></p>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-gray-800 mb-1">Alamat</label>
-          <textarea x-model="formData.alamat" rows="2" placeholder="Masukkan alamat lengkap"
-                    class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-gray-800 mb-1">Email</label>
-          <input type="email" x-model="formData.email" @input="clearError('email')" placeholder="nama@email.com"
-                 :class="err('email') ? 'border-red-400' : 'border-gray-200'"
-                 class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500">
-          <p x-show="err('email')" x-text="err('email')" class="mt-1 text-xs text-red-500" style="display: none;"></p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-gray-800 mb-1">Jenis kelamin</label>
-            <select x-model="formData.jenis_kelamin"
-                    class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white">
-              <option value="">Pilih jenis kelamin</option>
-              <option value="Laki-laki">Laki-laki</option>
-              <option value="Perempuan">Perempuan</option>
-            </select>
+        <!-- Ringkasan Data Akun & Biaya -->
+        @auth
+        <div class="bg-pink-50/40 rounded-xl p-4 text-xs space-y-2 border border-pink-100">
+          <div class="flex justify-between">
+            <span class="text-gray-500">Pemesan</span>
+            <span class="font-semibold text-gray-800">{{ Auth::user()->name }} ({{ Auth::user()->email }})</span>
           </div>
-          <div>
-            <label class="block text-xs font-bold text-gray-800 mb-1">Usia</label>
-            <input type="number" x-model="formData.usia"  placeholder="Contoh: 24"
-                   class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500">
+          <div class="flex justify-between">
+            <span class="text-gray-500">Total Biaya Konsultasi</span>
+            <span class="font-bold text-rose-600" x-text="rupiah(psikologTerpilih ? psikologTerpilih.biaya : 0)"></span>
           </div>
         </div>
+        @endauth
 
         <div>
           <label class="block text-xs font-bold text-gray-800 mb-1">Metode pembayaran</label>
@@ -345,97 +295,16 @@
                   class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-rose-500 bg-white">
             <option value="">Pilih metode pembayaran</option>
             <option value="Transfer Bank">Transfer Bank</option>
-            <option value="E-Wallet">QRIS</option>
+            <option value="E-Wallet">E-Wallet / QRIS</option>
           </select>
           <p x-show="err('metode_pembayaran')" x-text="err('metode_pembayaran')" class="mt-1 text-xs text-red-500" style="display: none;"></p>
         </div>
 
         <div class="flex items-center gap-3 pt-2">
           <button @click="step = 1" class="w-1/2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold py-2.5 rounded-lg text-sm transition">Kembali</button>
-          <button @click="showModal = true"
+          <button @click="bukaModalKonfirmasi()"
                   class="w-1/2 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition">
             Konfirmasi Pesanan <span>→</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- LANGKAH 3: INSTRUKSI PEMBAYARAN -->
-      <div x-show="step === 3" class="space-y-5" style="display: none;">
-        <div class="flex justify-between items-start border-b pb-3">
-          <div>
-            <p class="text-xs font-bold text-rose-600 uppercase">Pembayaran</p>
-            <h3 class="text-xl font-bold text-gray-900">Pembayaran Konsultasi</h3>
-          </div>
-          <div class="w-9 h-9 bg-pink-100 text-rose-600 rounded-lg flex items-center justify-center">💳</div>
-        </div>
-
-        <div class="bg-gray-50 p-4 rounded-xl space-y-3 border border-gray-100 text-sm">
-          <div class="flex justify-between text-xs text-gray-500">
-            <span>Total Tagihan:</span>
-            <span class="font-bold text-rose-600 text-base" x-text="rupiah(psikologTerpilih ? psikologTerpilih.tarif : 0)"></span>
-          </div>
-
-          <template x-if="formData.metode_pembayaran === 'Transfer Bank'">
-            <div class="bg-white p-3 rounded-lg border border-gray-200 space-y-2">
-              <p class="text-xs text-gray-500 font-semibold">Transfer ke Bank BCA:</p>
-              <div class="flex justify-between items-center bg-gray-50 p-2 rounded border">
-                <span class="font-mono font-bold text-gray-800 text-base">123-456-7890</span>
-                <span class="text-xs text-rose-600 font-semibold">a.n MentalCare</span>
-              </div>
-            </div>
-          </template>
-
-          <template x-if="formData.metode_pembayaran === 'QRIS'">
-            <div class="bg-white p-3 rounded-lg border border-gray-200 space-y-2 text-center">
-              <p class="text-xs text-gray-500 font-semibold">QRIS:</p>
-              <div class="w-32 h-32 bg-gray-200 mx-auto rounded-lg flex items-center justify-center text-xs text-gray-500">
-                <img src="{{ asset('QRIS.jpeg') }}" alt="QRIS Code" class="w-28 h-28 object-contain">
-              </div>
-            </div>
-          </template>
-        </div>
-
-        <div class="flex items-center gap-3 pt-2">
-          <button @click="step = 2" class="w-1/2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold py-2.5 rounded-lg text-sm transition">Kembali</button>
-          <button @click="konfirmasiPembayaran()"
-                  class="w-1/2 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-lg text-sm transition">
-            Saya Sudah Bayar
-          </button>
-        </div>
-      </div>
-
-      <!-- LANGKAH 4: SELESAI / SUKSES -->
-      <div x-show="step === 4" class="text-center py-6 space-y-6" style="display: none;">
-        <div class="w-12 h-12 bg-pink-100 text-rose-600 rounded-full flex items-center justify-center text-xl mx-auto">✓</div>
-        <div>
-          <h3 class="text-xl font-bold text-gray-900 mb-1">Pembayaran Berhasil Diverifikasi!</h3>
-          <p class="text-xs text-gray-400 max-w-xs mx-auto">Sesi konsultasi kamu telah dijadwalkan. Link sesi akan dikirimkan melalui email.</p>
-        </div>
-
-        <div class="bg-pink-50/40 rounded-xl p-4 text-xs text-left max-w-md mx-auto space-y-3 border border-pink-100/50">
-          <div class="flex justify-between py-1 border-b border-pink-100">
-            <span class="text-gray-400">Psikolog</span>
-            <span class="font-bold text-gray-800" x-text="psikologTerpilih ? psikologTerpilih.nama : '-'"></span>
-          </div>
-          <div class="flex justify-between py-1 border-b border-pink-100">
-            <span class="text-gray-400">Jadwal</span>
-            <span class="font-bold text-gray-800"
-                  x-text="formData.jam_mulai ? `${formatTanggal(formData.tanggal)}, ${jamPendek(formData.jam_mulai)}–${jamPendek(formData.jam_selesai)}` : formatTanggal(formData.tanggal)"></span>
-          </div>
-          <div class="flex justify-between py-1">
-            <span class="text-gray-400">Metode Pembayaran</span>
-            <span class="font-bold text-gray-800" x-text="formData.metode_pembayaran || '-'"></span>
-          </div>
-        </div>
-
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a href="{{ route('home') }}"
-             class="w-full sm:w-auto bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition text-center">
-            Ke Dashboard
-          </a>
-          <button @click="window.location.reload()"
-                  class="w-full sm:w-auto border border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold px-6 py-2.5 rounded-lg text-sm transition">
-            Buat Jadwal Baru
           </button>
         </div>
       </div>
@@ -451,13 +320,15 @@
         <button @click="showModal = false" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
       </div>
 
-      <p class="text-xs text-gray-500">Periksa rincian pesanan sebelum berlanjut ke tahap pembayaran:</p>
+      <p class="text-xs text-gray-500">Periksa rincian pesanan sebelum berlanjut ke halaman pembayaran:</p>
 
       <div class="bg-pink-50/50 rounded-xl p-4 text-xs space-y-2.5 border border-pink-100">
+        @auth
         <div class="flex justify-between border-b border-pink-100/60 pb-1.5">
           <span class="text-gray-500">Nama Pemesan</span>
-          <span class="font-semibold text-gray-800" x-text="formData.nama || '-'"></span>
+          <span class="font-semibold text-gray-800">{{ Auth::user()->name }}</span>
         </div>
+        @endauth
         <div class="flex justify-between border-b border-pink-100/60 pb-1.5">
           <span class="text-gray-500">Psikolog</span>
           <span class="font-semibold text-gray-800" x-text="psikologTerpilih ? psikologTerpilih.nama : '-'"></span>
@@ -466,6 +337,10 @@
           <span class="text-gray-500">Waktu Konsultasi</span>
           <span class="font-semibold text-gray-800"
                 x-text="formData.jam_mulai ? `${formatTanggal(formData.tanggal)} (${jamPendek(formData.jam_mulai)} - ${jamPendek(formData.jam_selesai)})` : formatTanggal(formData.tanggal)"></span>
+        </div>
+        <div class="flex justify-between border-b border-pink-100/60 pb-1.5">
+          <span class="text-gray-500">Total Biaya</span>
+          <span class="font-semibold text-gray-800" x-text="rupiah(psikologTerpilih ? psikologTerpilih.biaya : 0)"></span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-500">Metode Pembayaran</span>

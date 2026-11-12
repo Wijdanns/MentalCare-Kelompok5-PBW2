@@ -9,6 +9,7 @@ use App\Models\Psikolog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Exports\KonsultasiExport;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -34,34 +35,25 @@ class KonsultasiController extends Controller
         $data = $request->validate([
             'id_psikolog'       => ['required', 'exists:psikolog,id'],
             'id_jadwal'         => ['required', 'exists:jadwal_psikolog,id'],
-            'nama'              => ['required', 'string', 'max:255'],
-            'alamat'            => ['nullable', 'string'],
-            'email'             => ['required', 'email'],
-            'jenis_kelamin'     => ['nullable', 'in:Laki-laki,Perempuan'],
-            'usia'              => ['nullable', 'integer', 'min:1', 'max:150'],
             'metode_pembayaran' => ['required', 'in:Transfer Bank,E-Wallet'],
         ], [
-            'id_psikolog.required' => 'Pilih psikolog terlebih dahulu.',
-            'id_psikolog.exists'   => 'Psikolog yang dipilih tidak valid.',
-            'id_jadwal.required'   => 'Pilih jadwal konsultasi terlebih dahulu.',
-            'id_jadwal.exists'     => 'Jadwal yang dipilih tidak valid.',
-            'nama.required'        => 'Nama wajib diisi.',
-            'nama.max'             => 'Nama maksimal 255 karakter.',
-            'email.required'       => 'Email wajib diisi.',
-            'email.email'          => 'Format email tidak valid.',
+            'id_psikolog.required'       => 'Pilih psikolog terlebih dahulu.',
+            'id_psikolog.exists'         => 'Psikolog yang dipilih tidak valid.',
+            'id_jadwal.required'         => 'Pilih jadwal konsultasi terlebih dahulu.',
+            'id_jadwal.exists'           => 'Jadwal yang dipilih tidak valid.',
             'metode_pembayaran.required' => 'Pilih metode pembayaran terlebih dahulu.',
             'metode_pembayaran.in'       => 'Metode pembayaran tidak valid.',
         ]);
 
-
         $psikolog = Psikolog::findOrFail($data['id_psikolog']);
 
-        $jadwal = JadwalPsikolog::where('id', $data['id_jadwal'])
-            ->where('id_psikolog', $psikolog->id)
-            ->where('status', 'Tersedia')
-            ->firstOrFail();
+        $konsultasi = DB::transaction(function () use ($data, $psikolog) {
+            $jadwal = JadwalPsikolog::where('id', $data['id_jadwal'])
+                ->where('id_psikolog', $psikolog->id)
+                ->where('status', 'Tersedia')
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        $konsultasi = DB::transaction(function () use ($data, $psikolog, $jadwal) {
             $konsultasi = Konsultasi::create([
                 'id_user'           => Auth::id(),
                 'id_psikolog'       => $psikolog->id,
@@ -70,14 +62,9 @@ class KonsultasiController extends Controller
                 'total_biaya'       => $psikolog->biaya,
             ]);
 
-            Pembayaran::create([
-                'id_konsultasi'     => $konsultasi->id,
+            $konsultasi->pembayaran()->update([
                 'metode_pembayaran' => $data['metode_pembayaran'],
-                'status_pembayaran' => 'Pending',
             ]);
-
-            // Tandai jadwal sudah diambil
-            $jadwal->update(['status' => 'Tidak Tersedia']);
 
             return $konsultasi;
         });
@@ -104,6 +91,49 @@ class KonsultasiController extends Controller
         $konsultasi->load(['psikolog', 'jadwal', 'pembayaran']);
 
         return view('konsultasi.konfirmasi', compact('konsultasi'));
+    }
+
+    public function bayar(Request $request, Konsultasi $konsultasi)
+    {
+        abort_unless($konsultasi->id_user === Auth::id(), 403);
+
+        $request->validate([
+            'bukti_pembayaran' => ['required', 'file', 'mimes:jpeg,png,jpg,pdf', 'max:2048'],
+        ], [
+            'bukti_pembayaran.required' => 'Silakan unggah bukti pembayaran terlebih dahulu.',
+            'bukti_pembayaran.mimes'    => 'Format file harus berupa JPG, PNG, atau PDF.',
+            'bukti_pembayaran.max'      => 'Ukuran file bukti pembayaran maksimal 2MB.',
+        ]);
+
+        if ($request->hasFile('bukti_pembayaran')) {
+            $file = $request->file('bukti_pembayaran');
+            
+            $filename = time() . '_' . $konsultasi->id . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('public/bukti_pembayaran', $filename);
+
+            $pembayaran = $konsultasi->pembayaran;
+            if ($pembayaran->bukti_pembayaran && Storage::exists($pembayaran->bukti_pembayaran)) {
+                Storage::delete($pembayaran->bukti_pembayaran);
+            }
+
+            $pembayaran->update([
+                'bukti_pembayaran' => $path,
+                'status_pembayaran' => 'Pending', 
+                'waktu_pembayaran' => now(), 
+            ]);
+        }
+
+        return redirect()->route('konsultasi.riwayat')->with('success', 'Bukti pembayaran berhasil diunggah! Mohon tunggu verifikasi dari admin.');
+    }
+
+    public function riwayat()
+    {
+        $konsultasi = Konsultasi::with(['psikolog', 'jadwal', 'pembayaran'])
+            ->where('id_user', Auth::id())
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('konsultasi.riwayat', compact('konsultasi'));
     }
 
     // EXPORT: unduh riwayat konsultasi 
