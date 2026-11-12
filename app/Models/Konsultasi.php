@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Konsultasi extends Model
 {
@@ -40,6 +41,43 @@ class Konsultasi extends Model
         static::deleted(function (Konsultasi $konsultasi) {
             $konsultasi->jadwal()->update(['status' => 'Tersedia']);
         });
+    }
+
+    public function batasPembayaran()
+    {
+        return $this->created_at->copy()->addHour();
+    }
+
+    public function sudahKedaluwarsa(): bool
+    {
+        return $this->status_konsultasi === 'Menunggu Pembayaran'
+            && empty($this->pembayaran?->bukti_pembayaran)
+            && now()->greaterThanOrEqualTo($this->batasPembayaran());
+    }
+
+    public static function batalkanYangKedaluwarsa(): void
+    {
+        $kedaluwarsa = static::with(['pembayaran', 'jadwal'])
+            ->where('status_konsultasi', 'Menunggu Pembayaran')
+            ->where('created_at', '<=', now()->subHour())
+            ->whereHas('pembayaran', function ($q) {
+                $q->where('status_pembayaran', 'Pending')
+                  ->whereNull('bukti_pembayaran');
+            })
+            ->get();
+
+        foreach ($kedaluwarsa as $konsultasi) {
+            DB::transaction(function () use ($konsultasi) {
+                $konsultasi->pembayaran()->update([
+                    'status_pembayaran' => 'Gagal',
+                ]);
+
+                // Otomatis memicu event updated() untuk mengubah status jadwal menjadi 'Tersedia'
+                $konsultasi->update([
+                    'status_konsultasi' => 'Batal',
+                ]);
+            });
+        }
     }
 
     public function user()       { return $this->belongsTo(User::class, 'id_user'); }

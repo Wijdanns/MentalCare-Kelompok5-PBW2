@@ -18,6 +18,38 @@
         </div>
     @endif
 
+    <!-- TAMBAHAN BARU: COUNTDOWN BATAS PEMBAYARAN (1 JAM) -->
+    @if($konsultasi->status_konsultasi === 'Menunggu Pembayaran' && empty($konsultasi->pembayaran?->bukti_pembayaran))
+        <div x-data="{
+                deadline: {{ $konsultasi->batasPembayaran()->timestamp * 1000 }},
+                sisaText: 'Memuat...',
+                init() {
+                    this.updateTimer();
+                    setInterval(() => this.updateTimer(), 1000);
+                },
+                updateTimer() {
+                    const diff = this.deadline - Date.now();
+                    if (diff <= 0) {
+                        this.sisaText = '00:00';
+                        window.location.reload();
+                        return;
+                    }
+                    const menit = Math.floor(diff / 60000);
+                    const detik = Math.floor((diff % 60000) / 1000);
+                    this.sisaText = String(menit).padStart(2, '0') + ':' + String(detik).padStart(2, '0');
+                }
+             }"
+             class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm">
+            <div class="text-amber-800">
+                <span class="font-semibold">Batas Waktu Pembayaran:</span>
+                {{ $konsultasi->batasPembayaran()->translatedFormat('d M Y, H:i') }} WIB
+            </div>
+            <div class="bg-amber-600 text-white font-mono font-bold px-3 py-1 rounded-lg text-sm">
+                Sisa Waktu: <span x-text="sisaText"></span>
+            </div>
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         <!-- BAGIAN KIRI: RINGKASAN KONSULTASI -->
@@ -34,6 +66,7 @@
                     <p class="font-semibold text-gray-800">
                         {{ \Carbon\Carbon::parse($konsultasi->jadwal->tanggal)->translatedFormat('l, d F Y') }}
                     </p>
+                    <!-- DIUBAH: Merapikan format jam -->
                     <p class="text-gray-600 mt-0.5">
                         {{ \Carbon\Carbon::parse($konsultasi->jadwal->jam_mulai)->format('H:i') }} - 
                         {{ \Carbon\Carbon::parse($konsultasi->jadwal->jam_selesai)->format('H:i') }} WIB
@@ -76,7 +109,6 @@
                     <div class="bg-white p-4 rounded-xl border border-gray-200 text-center">
                         <p class="text-xs text-gray-500 font-semibold mb-3">Scan QRIS Berikut:</p>
                         <div class="bg-gray-100 w-40 h-40 mx-auto rounded-xl flex items-center justify-center border border-gray-200 overflow-hidden">
-                            <!-- Ganti src dengan path gambar QRIS aslimu -->
                             <img src="{{ asset('images/qris-dummy.png') }}" alt="QRIS Code" class="w-full h-full object-cover">
                         </div>
                         <p class="text-xs text-gray-400 mt-3 leading-relaxed">
@@ -91,7 +123,6 @@
             </div>
 
             <!-- FORM UPLOAD BUKTI -->
-            <!-- Pastikan kamu sudah membuat route 'konsultasi.bayar' di web.php dan method di Controller -->
             <form action="{{ route('konsultasi.bayar', $konsultasi->id) }}" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                 @csrf
                 <h3 class="text-sm font-bold text-gray-900 mb-3">Upload Bukti Pembayaran</h3>
@@ -108,8 +139,10 @@
                 <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-lg text-sm transition">
                     Kirim Bukti Pembayaran
                 </button>
-                <a href="{{ route('home') }}" class="block text-center w-full border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold py-2.5 rounded-lg text-sm transition mt-3">
-                    Bayar Nanti (Kembali ke Beranda)
+                
+                <!-- DIUBAH: Arahkan ke halaman riwayat agar pasien mudah kembali membayar -->
+                <a href="{{ route('konsultasi.riwayat') }}" class="block text-center w-full border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold py-2.5 rounded-lg text-sm transition mt-3">
+                    Bayar Nanti (Lihat Riwayat)
                 </a>
             </form>
 

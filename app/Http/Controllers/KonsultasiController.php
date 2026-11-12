@@ -17,13 +17,14 @@ class KonsultasiController extends Controller
 {
     public function index()
     {
+        Konsultasi::batalkanYangKedaluwarsa();
+
         $psikologs = Psikolog::query()
             ->with(['jadwalTersedia' => function ($q) {
                 $q->orderBy('tanggal')->orderBy('jam_mulai');
             }])
             ->get()
-            ->each(function ($p) {
-                // Dipakai di view: ->tersedia
+            ->each(function ($p) { 
                 $p->tersedia = $p->jadwalTersedia->isNotEmpty();
             });
 
@@ -90,12 +91,30 @@ class KonsultasiController extends Controller
 
         $konsultasi->load(['psikolog', 'jadwal', 'pembayaran']);
 
+        if ($konsultasi->sudahKedaluwarsa()) {
+            Konsultasi::batalkanYangKedaluwarsa();
+
+            return redirect()
+                ->route('konsultasi.riwayat')
+                ->with('error', 'Batas waktu pembayaran (1 jam) telah habis. Pesanan dibatalkan otomatis.');
+        }
+
         return view('konsultasi.konfirmasi', compact('konsultasi'));
     }
 
     public function bayar(Request $request, Konsultasi $konsultasi)
     {
         abort_unless($konsultasi->id_user === Auth::id(), 403);
+
+        $konsultasi->load('pembayaran');
+
+        if ($konsultasi->sudahKedaluwarsa()) {
+            Konsultasi::batalkanYangKedaluwarsa();
+
+            return redirect()
+                ->route('konsultasi.riwayat')
+                ->with('error', 'Batas waktu pembayaran (1 jam) telah habis. Silakan buat jadwal ulang.');
+        }
 
         $request->validate([
             'bukti_pembayaran' => ['required', 'file', 'mimes:jpeg,png,jpg,pdf', 'max:2048'],
@@ -107,27 +126,30 @@ class KonsultasiController extends Controller
 
         if ($request->hasFile('bukti_pembayaran')) {
             $file = $request->file('bukti_pembayaran');
-            
             $filename = time() . '_' . $konsultasi->id . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('public/bukti_pembayaran', $filename);
+            $path = $file->storeAs('bukti_pembayaran', $filename, 'public');
 
             $pembayaran = $konsultasi->pembayaran;
-            if ($pembayaran->bukti_pembayaran && Storage::exists($pembayaran->bukti_pembayaran)) {
-                Storage::delete($pembayaran->bukti_pembayaran);
+            if ($pembayaran->bukti_pembayaran && Storage::disk('public')->exists($pembayaran->bukti_pembayaran)) {
+                Storage::disk('public')->delete($pembayaran->bukti_pembayaran);
             }
 
             $pembayaran->update([
-                'bukti_pembayaran' => $path,
-                'status_pembayaran' => 'Pending', 
-                'waktu_pembayaran' => now(), 
+                'bukti_pembayaran'  => $path,
+                'status_pembayaran' => 'Pending',
+                'waktu_pembayaran'  => now(),
             ]);
         }
 
-        return redirect()->route('konsultasi.riwayat')->with('success', 'Bukti pembayaran berhasil diunggah! Mohon tunggu verifikasi dari admin.');
+        return redirect()
+            ->route('konsultasi.riwayat')
+            ->with('success', 'Bukti pembayaran berhasil diunggah! Mohon tunggu verifikasi dari admin.');
     }
 
     public function riwayat()
     {
+        Konsultasi::batalkanYangKedaluwarsa();
+
         $konsultasi = Konsultasi::with(['psikolog', 'jadwal', 'pembayaran'])
             ->where('id_user', Auth::id())
             ->orderByDesc('created_at')

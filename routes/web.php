@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Konsultasi;
 use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\TesController;
 use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\ProfilController;
+use Illuminate\Support\Facades\Schedule;
 use App\Http\Middleware\EnsureRole;
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +58,7 @@ Route::get('/konsultasi/go-login', function () {
     return redirect()->route('login');
 })->name('konsultasi.go-login');
 Route::get('/konsultasi/export', [KonsultasiController::class, 'exportExcel'])->name('konsultasi.export');
+Schedule::call(function () { Konsultasi::batalkanYangKedaluwarsa(); })->everyMinute();
 
 // ---------- Area pasien (wajib login) ----------
 Route::middleware(['auth', EnsureRole::class . ':pasien'])->group(function () {

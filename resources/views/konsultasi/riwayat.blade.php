@@ -12,6 +12,13 @@
         </div>
     @endif
 
+    <!-- TAMBAHAN BARU: Pesan error jika pesanan kedaluwarsa (> 1 jam) -->
+    @if(session('error'))
+        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {{ session('error') }}
+        </div>
+    @endif
+
     @if($konsultasi->isEmpty())
         <div class="text-center py-10 bg-white rounded-xl border border-gray-100">
             <p class="text-gray-500">Kamu belum pernah membuat janji konsultasi.</p>
@@ -37,6 +44,13 @@
                             ⏰ {{ \Carbon\Carbon::parse($k->jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($k->jadwal->jam_selesai)->format('H:i') }}
                         </p>
                         <p class="text-xs text-gray-400 mt-1">Total Tagihan: Rp {{ number_format($k->total_biaya, 0, ',', '.') }}</p>
+                        
+                        <!-- TAMBAHAN BARU: Info batas waktu bayar jika belum bayar -->
+                        @if($k->status_konsultasi == 'Menunggu Pembayaran' && empty($k->pembayaran->bukti_pembayaran))
+                            <p class="text-xs text-amber-600 font-medium mt-1">
+                                ⏳ Batas bayar sampai {{ $k->batasPembayaran()->format('H:i') }} WIB
+                            </p>
+                        @endif
                     </div>
 
                     <!-- Tombol Lanjut Pembayaran (muncul jika status masih menunggu dan bukti belum ada) -->
