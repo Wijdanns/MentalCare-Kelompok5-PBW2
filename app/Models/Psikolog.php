@@ -54,4 +54,13 @@ class Psikolog extends Model
             ? asset('storage/' . $this->foto_profil)
             : asset('images/default-psikolog.svg'));
     }
+
+    public function user() { return $this->belongsTo(User::class, 'id_user'); }
+
+    protected static function booted(): void
+    {
+        static::saved(function (Psikolog $p) {
+            $p->user?->update(['nama' => $p->nama, 'email' => $p->email]);
+        });
+    }
 }

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('psikolog', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_user')->nullable()->unique()->constrained('users')->nullOnDelete();
             $table->string('nama');
             $table->string('email')->unique();
             $table->string('spesialis');
