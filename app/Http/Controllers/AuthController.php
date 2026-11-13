@@ -106,6 +106,12 @@ class AuthController extends Controller
             return redirect('/admin');
         }
 
+        // Psikolog ke /panel-psikolog
+        if ($user->role === 'psikolog') {
+            session()->forget('url.intended');
+            return redirect('/panel-psikolog');
+        }
+
         // Pasien: hormati intended, tapi jangan biarkan ke /admin.
         $intended = session()->get('url.intended');
         $path = $intended ? parse_url($intended, PHP_URL_PATH) : null;
