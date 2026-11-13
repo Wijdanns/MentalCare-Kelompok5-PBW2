@@ -47,6 +47,7 @@
                 @php
                     $user = auth()->user();
                     $isAdmin = $user->role === 'admin';
+                    $isPsikolog = $user->role === 'psikolog';
                 @endphp
 
                 {{-- Profil + dropdown (hover / fokus keyboard) --}}
@@ -75,9 +76,11 @@
                             <div class="p-2 font-medium">
                                 @if ($isAdmin)
                                     <a href="{{ url('/admin') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Panel Admin</a>
+                                @elseif ($isPsikolog)
+                                    <a href="{{ url('/panel-psikolog') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Panel Psikolog</a>
                                 @else
-                                <a href="{{ route('profil.index') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Akun saya</a>
-                                <a href="{{  route('konsultasi.riwayat')  }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Riwayat konsultasi</a>
+                                    <a href="{{ route('profil.index') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Akun saya</a>
+                                    <a href="{{ route('konsultasi.riwayat') }}" class="block rounded-lg px-3 py-2 text-gray-700 hover:bg-blush-100 hover:text-primary">Riwayat konsultasi</a>
                                 @endif
 
                                 <form action="{{ route('logout') }}" method="POST">
@@ -128,7 +131,20 @@
                 @endguest
 
                 @auth
-                    @php $user = auth()->user(); @endphp
+                    @php
+                        $user = auth()->user();
+
+                        $panelUrl = match ($user->role) {
+                            'admin'    => url('/admin'),
+                            'psikolog' => url('/panel-psikolog'),
+                            default    => route('profil.index'),
+                        };
+                        $panelLabel = match ($user->role) {
+                            'admin'    => 'Panel Admin',
+                            'psikolog' => 'Panel Psikolog',
+                            default    => 'Akun saya',
+                        };
+                    @endphp
 
                     <div class="mb-3 flex items-center gap-3 px-3">
                         @if ($user->profil)
@@ -144,10 +160,15 @@
                         </div>
                     </div>
 
-                    <a href="{{ $user->role === 'admin' ? url('/admin') : route('profil.index') }}"
-                        class="block rounded-lg px-3 py-2.5 text-gray-700 hover:bg-blush-100">
-                        {{ $user->role === 'admin' ? 'Panel Admin' : 'Akun saya' }}
+                    <a href="{{ $panelUrl }}" class="block rounded-lg px-3 py-2.5 text-gray-700 hover:bg-blush-100">
+                        {{ $panelLabel }}
                     </a>
+
+                    @if ($user->role === 'pasien')
+                        <a href="{{ route('konsultasi.riwayat') }}" class="block rounded-lg px-3 py-2.5 text-gray-700 hover:bg-blush-100">
+                            Riwayat konsultasi
+                        </a>
+                    @endif
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
