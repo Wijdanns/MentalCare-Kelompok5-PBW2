@@ -100,23 +100,25 @@ class AuthController extends Controller
     {
         $user = Auth::user();
 
-        // Admin selalu ke /admin, tidak peduli intended.
-        if ($user->role === 'admin') {
+        // Admin & psikolog selalu ke panel masing-masing, abaikan intended.
+        $panel = match ($user->role) {
+            'admin'    => '/admin',
+            'psikolog' => '/panel-psikolog',
+            default    => null,
+        };
+
+        if ($panel) {
             session()->forget('url.intended');
-            return redirect('/admin');
+            return redirect($panel);
         }
 
-        // Psikolog ke /panel-psikolog
-        if ($user->role === 'psikolog') {
-            session()->forget('url.intended');
-            return redirect('/panel-psikolog');
-        }
-
-        // Pasien: hormati intended, tapi jangan biarkan ke /admin.
+        // Pasien: hormati intended, tapi jangan biarkan ke area panel mana pun.
         $intended = session()->get('url.intended');
         $path = $intended ? parse_url($intended, PHP_URL_PATH) : null;
 
-        if ($path && ! str_starts_with($path, '/admin')) {
+        if ($path
+            && ! str_starts_with($path, '/admin')
+            && ! str_starts_with($path, '/panel-psikolog')) {
             return redirect()->intended(route('home'));
         }
 

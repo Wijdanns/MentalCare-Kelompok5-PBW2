@@ -10,7 +10,7 @@ class Psikolog extends Model
     protected $table = 'psikolog';
 
     protected $fillable = [
-        'nama', 'email', 'spesialis',
+        'id_user','nama', 'email', 'spesialis',
         'deskripsi_psikolog', 'foto_profil', 'biaya',
     ];
 
