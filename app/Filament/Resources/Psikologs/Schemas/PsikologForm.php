@@ -25,6 +25,14 @@ class PsikologForm
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
 
+                TextInput::make('password')
+                ->label('Password Akun Psikolog')
+                ->password()
+                ->minLength(8)
+                ->required()
+                ->visibleOn('create')  
+                ->dehydrated(),
+
                 TextInput::make('spesialis')
                     ->label('Spesialisasi')
                     ->required()

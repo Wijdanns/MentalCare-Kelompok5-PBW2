@@ -24,6 +24,7 @@ class JadwalPsikologResource extends Resource
     protected static ?string $navigationLabel = 'Jadwal Psikolog';
     protected static ?string $modelLabel = 'Jadwal Psikolog';
     protected static ?string $pluralModelLabel = 'Jadwal Psikolog';
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Schema $schema): Schema
     {

@@ -53,6 +53,7 @@ class UsersTable
                     ->options([
                         'pasien' => 'Pasien',
                         'admin' => 'Admin',
+                        'psikolog' => 'Psikolog',
                     ]),
             ])
             ->recordActions([
