@@ -1,6 +1,5 @@
 <?php
 
-namespace App\Filament\Resources\HasilTes\Schemas;
 
 use Filament\Schemas\Schema;
 
